@@ -38,10 +38,20 @@ def set_payoffs(subsession: Subsession): # because we use wait_for_all_groups
         all_distances = [p.distance for p in group.get_players()]
         min_dist = min(all_distances)
         winners = [p for p in group.get_players() if p.distance == min_dist]
-        
-        lucky_winner = random.choice(winners)    
-        lucky_winner.payoff = cu(C.Winner_Reward)
+        lucky_winner = random.choice(winners)
 
+        for p in group.get_players():
+            if p == lucky_winner:
+                p.is_luckywinner = True   
+                p.payoff = cu(C.Winner_Reward)
+            else:
+                p.is_luckywinner = False 
+                p.payoff = cu(0)
+
+            p.participant.vars[f'reason_{p.round_number}'] = p.reason if p.round_number in C.reasoning_rounds else None
+            p.participant.vars[f'decision_{p.round_number}'] = p.decision
+            p.participant.vars[f'payoff_{p.round_number}'] = p.payoff
+            p.participant.vars[f'is_winner_{p.round_number}'] = p.is_luckywinner
 
 class Player(BasePlayer):
     distance = models.FloatField()
@@ -54,6 +64,8 @@ class Player(BasePlayer):
         label = "請說明您選擇該數字的決策思考過程：",
         blank = False,
     )
+    is_luckywinner = models.BooleanField()
+
 ##############################################################################
 
 # pages
@@ -103,9 +115,6 @@ class reasoning(Page):
 
         if len(content) == 0: # block empty input
             return "理由欄位不能為空，請輸入您的決策思考過程。"
-        
-#       if len(content) < 5: # block too short/long inputs
-#           return "您的理由過於簡短，請輸入至少 5 個字。"
 
         if len(set(content)) < 3 and len(content) > 0: # block too short, single-word, or repetitive inputs
             return "請勿輸入過短、單一，或重複的文字內容。"
@@ -129,7 +138,8 @@ class Results(Page):
                 'decision': f"{player.in_round(g.round_number).decision}",
                 'mean': f"{g.mean_number:.2f}",
                 "target": f"{g.target_number:.2f}",
-                'is_current': g.round_number == player.round_number
+                'is_current': g.round_number == player.round_number,
+                'is_luckywinner': player.in_round(g.round_number).is_luckywinner
             })
             
         return {

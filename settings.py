@@ -17,12 +17,12 @@ SESSION_CONFIGS = [
         name = 'Experiment_stage1',
         display_name = "實驗第一階段",
         num_demo_participants = 4 if debug else 12,
-        app_sequence = ['phase1', 'phase2'],
+        app_sequence = ['phase1', 'phase2', 'phase_AI'],
     ),
 ]
 
 SESSION_CONFIG_DEFAULTS = dict(
-    display_name = "第一部分",
+    display_name = "第一階段",
     real_world_currency_per_point = 1.00,
     participation_fee = 150.00,
     doc="",

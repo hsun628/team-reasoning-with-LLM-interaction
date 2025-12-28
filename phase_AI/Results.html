@@ -1,10 +1,30 @@
-{{ block title }}
-    Page title
-{{ endblock }}
+{% extends "global/Page.html" %}
+{% load otree %}
 
-{{ block content }}
+{% block content %}
+<h3 class="mb-4"><b>獨立ChatGPT的判定結果</b></h3>
 
-    {{ next_button }}
-{{ endblock }}
+<p>過去回合的資訊：</p>
 
+<table class="table">
+    <thead>
+        <tr>
+            <th>回合</th>
+            <th>您是否為贏家</th>
+            <th>獨立ChatGPT的判定結果</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for d in extra_data %}
+            <td>{{ d.round }}</td>
+            <td>{{ d.is_luckywinner }}</td>
+            <td>{{ d.assessment }}</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
 
+<p>您在第一階段實驗的報酬為：<span style="font-weight: bold;">{{ player.payoff }}</span></p>
+
+    {% next_button %}
+{% endblock %}

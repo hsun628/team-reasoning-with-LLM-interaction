@@ -27,7 +27,17 @@
     </tbody>
 </table>
 
-<p>這回合您的報酬是：{{ player.payoff }} 法幣</p>
+<p>
+    {% for d in history_data %}
+        {% if d.is_current %}
+            {% if d.is_luckywinner %}
+                <span>您<b>是</b>此回合贏家</span>
+            {% else %}
+                <span>您<b>不是</b>此回合贏家</span>
+            {% endif %}
+        {% endif %}
+    {% endfor %}
+</p>
 
     {% next_button %}
 {% endblock %}

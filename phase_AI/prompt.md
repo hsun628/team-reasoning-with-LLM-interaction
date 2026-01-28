@@ -63,7 +63,12 @@ Compare the reasons provided by the following two participants. Determine which 
 ### Response Format:
 Please state in Mandarin which participant more specifically explained their "underlying thoughts" and "information used," and briefly provide the reasons for your judgment. (If the two are extremely close, you may declare a tie).
 
-##### Experimental instruction:
+### Experimental instruction:
+Part II consists of 10 rounds. At the beginning, the computer randomly divides all participants into two equal groups.
+  * In each round, you must choose an integer between 0 and 100.
+  * The average of all numbers chosen by participants in your group is called the "Average Number."
+  * The person whose choice is closest to **two-thirds of the Average Number** (called the "Target Number") is the winner of the round. In the event of a tie, the computer will randomly select one winner.
+  * Before each round begins, the computer will display the past "Average Number" and "Target Number" for your group.
 
 
 ---
@@ -179,3 +184,14 @@ ChatGPT將不會參考以下標準判斷哪一個理由較具體地說明做出�
   - 大量自創詞彙：雖然A車的里程數較高，但具備完整的回廠保養紀錄；相對而言，B車雖里程數少，卻缺乏修繕歷程透明度。基於我的資產損害預防原則，我認為選擇具備歷程可溯性的A車，能最大化地降低未來的突然壞掉的風險，因此我決定買A車。
 
   -> 評判應注意受試者是否有說明該自創詞彙的意思或判斷詞彙在日常語意下是否真的包含具體的邏輯推導。**如果去掉難以理解的詞彙後理由變得空洞，則該理由評價應降低**。
+
+  ---
+### 範例理由（情境：是否帶傘出門）
+
+  - **三項標準皆符合**：我剛看窗外的天色整片變得很暗、雲層厚到不行，而且我看氣象預報也說今天降雨機率有80%。我猜等一下出門一定會下大雨，怕被淋得濕答答的，所以決定還是帶一下傘比較保險。
+
+  - **資訊與信念較低**：我覺得等一下可能會下雨，所以還是帶傘比較保險。雖然這樣要多帶一個東西，但至少心裡踏實，不怕淋濕。
+  - **邏輯與策略較低**：我看到窗外天色暗、雲層厚，氣象預報說降雨機率有 80%，所以我帶傘了。但其實如果傘忘了帶，也不會怎麼樣，帶不帶都差不多。
+  - **具體程度較低**：天空很暗，氣象說降雨機率高，所以我覺得還是帶傘。
+
+  - **字數更多但評價接近**：我剛看了一下窗外，整個天空都變得很暗，雲層厚得幾乎看不到天空，甚至有些地方已經開始飄小雨。我仔細觀察了雲的顏色和形狀，發現雲層密集且低壓明顯，再加上我查看了氣象預報，今天降雨機率高達80%，整體天氣狀況非常不穩定。基於這些觀察，我推測等一下出門的時候大雨的可能性非常高。如果不帶傘，我很可能會被雨淋得濕答答，衣服鞋子都會弄濕，而且可能還會影響接下來的行程。因此，我判斷為了保險起見，還是帶傘出門比較穩妥。這樣既能應對突如其來的降雨，也讓我心理上更加踏實，不必擔心被雨打亂安排。

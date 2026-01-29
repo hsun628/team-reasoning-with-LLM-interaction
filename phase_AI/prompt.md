@@ -9,7 +9,7 @@
 - **資訊與信念(Information & Belief)**：受試者是否提到了他觀察到的特定資訊，以及他對當前狀況的推論或假設？他是如何做出該推論和假設的？
 
 - **邏輯與策略(Logic & Strategy)**：受試者是否展示了如何從上述資訊與信念推導至其決策的過程？檢查推論過程時，也請考慮以下要素：
-  - **邏輯是否自洽（重要）**： 推論所聲稱的因果關係是否符合實驗說明？如果推論與實驗說明或物理事實產生根本性矛盾（例如：聲稱某決策可以達成效果A，但實驗說明中該決策絕對不可能達成該效果），則該理由應被視為「邏輯斷裂」，評價應低於自洽的理由。
+  - **邏輯是否符合規則（重要）**： 推論所聲稱的因果關係是否符合實驗說明？如果推論與實驗說明或物理事實產生根本性矛盾（例如：聲稱某決策可以達成效果A，但實驗說明中該決策絕對不可能達成該效果），則該理由應被視為「邏輯斷裂」，評價應低於自洽的理由。
 
 - **理由的具體程度**：受試者的理由是否具體？（例如：比起「我隨便選的」或「我想這樣選」，更偏好「因為我觀察到 A，所以我預期 B，故決定採取 C 策略」）。你可以根據以下標準進一步判斷：    
     - 理由是否包含具體的規則相關資訊，而非僅是概略的描述。
@@ -44,7 +44,7 @@ Compare the reasons provided by the following two participants. Determine which 
 
 * **Information & Belief:** Does the participant mention specific information they observed? Do they state their inferences or hypotheses about the current situation? Did they elaborate on how they arrive at these inferences and hypotheses?
 * **Logic & Strategy:** Does the participant demonstrate the derivation process from the aforementioned information and beliefs to their final decision?
-  * **Logical Consistency (Crucial):** Does the claimed causal relationship in the reasoning align with the experimental rules? If the reasoning fundamentally contradicts the rules or physical facts (e.g., claiming that a certain decision can achieve "Effect A," when the rules make it impossible for that decision to ever produce such an effect), the rationale should be considered a "Logical Break." Such a rationale must receive a lower evaluation than one that is logically self-consistent.
+  * **Is the logic consistent with the experimental rules? (Crucial):** Does the claimed causal relationship in the reasoning align with the experimental rules? If the reasoning fundamentally contradicts the rules or physical facts (e.g., claiming that a certain decision can achieve "Effect A," when the rules make it impossible for that decision to ever produce such an effect), the rationale should be considered a "Logical Break." Such a rationale must receive a lower evaluation than one that is logically self-consistent.
 * **Level of Specificity:** Is the reason specific? (For example: prefer "Because I observed A, I expected B, and therefore adopted strategy C" over "I just picked one" or "I wanted to choose this"). You can further judge based on:
     * Whether the reason contains specific information related to the rules, rather than just a vague description.
     * Whether there are clear causal and logical relationships between sentences.
@@ -155,17 +155,19 @@ ChatGPT將不會參考以下標準判斷哪一個理由較具體地說明做出�
   - 符合標準：現在已經是下班時間了，路上塞車塞到爆，如果搭計程車肯定會卡在車陣裡動不了。雖然捷運下車還要多走幾分鐘的路，但至少不會塞車，比較有可能來得及去聚餐。
   
   - 不符合：現在下班時間外面到處都在塞車，感覺路況真的很差。我看了一下地圖，覺得還是去搭捷運可能比較適合我，應該會比搭計程車更有機會趕上聚餐。
+  （未展開說明其思考過程）
 
-- **邏輯是否自洽**：(1>2)
+- **邏輯是否符合規則**：(1>2)
   - 符合標準：我看到原本點的水餃還沒上桌，就問老闆能不能換點鍋貼。既然老闆同意了，而且我最後確實有吃到鍋貼，根據『使用者付費』的原則，我應該支付鍋貼的錢。雖然我沒吃到水餃，但我得到了鍋貼，所以付錢是合理的。
 
   - 不符合：我看到原本點的水餃還沒上桌，就問老闆能不能換點鍋貼。雖然老闆後來有給我鍋貼，但這是我用水餃換來的，既然我根本沒吃到原本點的那盤水餃，代表我沒有消費到我點的東西，那我自然就不用付錢。
+  （不符合使用者付費的社會規範）
 
 - **理由的具體程度**：(1>2)
   - 符合標準：蘋果單買一顆要40元，一袋5顆的賣150元。我算了一下買一袋的話平均一顆只要 30 元，雖然一次買比較多，但平均來說比較省錢，所以我決定買整袋的。
 
   - 不符合：蘋果單買一顆要40元，一袋5顆的賣150元。雖然買一袋一顆只要30元，但還是比較貴，所以我決定買一顆就好。
-  (未說明其判斷較貴的標準是什麼？單價還是整體花費？)
+  （未說明其判斷較貴的標準是什麼？單價還是整體花費？）
 
 - **禁止根據決策的「勝算」或「優劣」判斷**：(1>2)
 
@@ -186,12 +188,69 @@ ChatGPT將不會參考以下標準判斷哪一個理由較具體地說明做出�
   -> 評判應注意受試者是否有說明該自創詞彙的意思或判斷詞彙在日常語意下是否真的包含具體的邏輯推導。**如果去掉難以理解的詞彙後理由變得空洞，則該理由評價應降低**。
 
   ---
-### 範例理由（情境：是否帶傘出門）
+### 範例理由
 
-  - **三項標準皆符合**：我剛看窗外的天色整片變得很暗、雲層厚到不行，而且我看氣象預報也說今天降雨機率有80%。我猜等一下出門一定會下大雨，怕被淋得濕答答的，所以決定還是帶一下傘比較保險。
+  **情境**：要不要帶傘出門
 
-  - **資訊與信念較低**：我覺得等一下可能會下雨，所以還是帶傘比較保險。雖然這樣要多帶一個東西，但至少心裡踏實，不怕淋濕。
-  - **邏輯與策略較低**：我看到窗外天色暗、雲層厚，氣象預報說降雨機率有 80%，所以我帶傘了。但其實如果傘忘了帶，也不會怎麼樣，帶不帶都差不多。
-  - **具體程度較低**：天空很暗，氣象說降雨機率高，所以我覺得還是帶傘。
+  **選擇**：
+  - A. 帶雨傘出門
+  - B. 不帶雨傘出門
+  
+  **決策理由**：
 
-  - **字數更多但評價接近**：我剛看了一下窗外，整個天空都變得很暗，雲層厚得幾乎看不到天空，甚至有些地方已經開始飄小雨。我仔細觀察了雲的顏色和形狀，發現雲層密集且低壓明顯，再加上我查看了氣象預報，今天降雨機率高達80%，整體天氣狀況非常不穩定。基於這些觀察，我推測等一下出門的時候大雨的可能性非常高。如果不帶傘，我很可能會被雨淋得濕答答，衣服鞋子都會弄濕，而且可能還會影響接下來的行程。因此，我判斷為了保險起見，還是帶傘出門比較穩妥。這樣既能應對突如其來的降雨，也讓我心理上更加踏實，不必擔心被雨打亂安排。
+  - **三項標準皆符合**：
+    - 我剛看窗外的天色整片變得很暗、雲層厚到不行，而且我看氣象預報也說今天降雨機率有80%。我猜等一下出門一定會下大雨，怕被淋得濕答答的，所以決定還是帶一下傘比較保險。
+
+  - **資訊與信念較低**：
+   
+    - 我剛看窗外的天色整片變得很暗、雲層厚到不行。我猜等一下出門一定會下大雨，怕被淋得濕答答的，所以決定還是帶一下傘比較保險。（提及較少使用資訊）
+
+    - 我覺得等一下可能會下雨，所以還是帶傘比較保險。雖然這樣要多帶一個東西，但至少心裡踏實，不怕淋濕。
+
+  - **邏輯與策略較低**：
+    
+    - 我剛看窗外的天色整片變得很暗、雲層厚到不行，而且我看氣象預報也說今天降雨機率有80%，所以決定還是帶一下傘比較保險。（跳過思考過程：可能會下雨的後果和最後行動的關聯）
+
+    - 我看到窗外天色暗、雲層厚，氣象預報說降雨機率有80%，所以我帶傘了。但其實如果傘忘了帶，也不會怎麼樣，帶不帶都差不多。
+  
+  - **具體程度較低**：
+    
+    - 我看外面天色很暗，氣象預報也說降雨機率很高。我猜等一下出門一定會下大雨，怕被淋得濕答答的，所以決定還是帶一下傘比較保險。
+
+    - 天空很暗，氣象說降雨機率高，所以我覺得還是帶傘。
+
+  - **字數更多但評價接近**：
+  
+    - 我剛看了一下窗外，整個天空都變得很暗，雲層厚得幾乎看不到天空，甚至有些地方已經開始飄小雨。我仔細觀察了雲的顏色和形狀，發現雲層密集且低壓明顯，再加上我查看了氣象預報，今天降雨機率高達80%，整體天氣狀況非常不穩定。基於這些觀察，我推測等一下出門的時候大雨的可能性非常高。如果不帶傘，我很可能會被雨淋得濕答答，衣服鞋子都會弄濕，而且可能還會影響接下來的行程。因此，我判斷為了保險起見，還是帶傘出門比較穩妥。這樣既能應對突如其來的降雨，也讓我心理上更加踏實，不必擔心被雨打亂安排。
+
+  **情境**：買早餐或自己做
+
+  **選擇**：
+  - A. 去外面買早餐
+  - B. 在家自己做早餐
+  
+  **決策理由**：
+
+  - **三項標準皆符合**：
+    
+    - 今天早上時間很趕，但又不想空腹上班，所以選擇快速又方便的便利商店三明治。
+  
+  - **資訊與信念/邏輯與策略較低**：
+    
+    - 因為不想空腹上班，所以選擇快速又方便的便利商店三明治。（未說明一定要快速方便的原因）
+
+    - 今天早上時間很趕，不想空腹上班。便利商店三明治看起來不錯，所以我就買了。（未連結決定和資訊的關聯：便利商店三明治為何不錯？）
+
+  **情境**：下課後去健身房或回家看劇
+
+  **選擇**：
+  - A. 去健身房
+  - B. 回家看劇
+  
+  **決策理由**：
+
+  - **三項標準皆符合**：
+
+    - 雖然上一整天課很累，但如果今天再不運動，就快跟不上我的運動計畫了。另外，健身房的月費都已經付了，如果不去使用等於浪費錢。所以還是決定下課後去健身房運動。
+
+    - 雖然上一整天課很累，但如果今天再不看劇，就快跟不上我的追劇計畫了。另外，串流平台的訂閱費都已經付了，如果不看等於浪費錢。所以還是決定下課後回家看劇。

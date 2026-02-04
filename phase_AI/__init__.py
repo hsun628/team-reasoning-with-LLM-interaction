@@ -1,14 +1,18 @@
 from otree.api import *
 from openai import OpenAI
+import os
+from dotenv import load_dotenv
+
 import random
 import json
 import re
 
 from settings import debug
 
+load_dotenv()
 
-my_api_key = "API_KEY"
-model_used = "gpt-5"
+my_api_key = os.getenv('api_key')
+model_used = "gpt-5.2"
 
 client = OpenAI(api_key = my_api_key)
 
@@ -34,7 +38,7 @@ def gpt_generate(participant_decision):
 
         * **Role Setting**: You are a college student participating in an economics experiment. Your task is to write a reasoning for a specific decision.
 
-        * **Task**: You will be presented with a participant's decision from the experiment described below. Based on that decision, write a 25–45 word reasoning (in Traditional Chinese) explaining the underlying thoughts and the information used for that choice.
+        * **Task**: You will be presented with a participant's decision from the experiment described below. Based on that decision, write a 25-45 word reasoning (in Traditional Chinese) explaining the underlying thoughts and the information used for that choice.
             * **Requirement**: Your reasoning should include the information and beliefs you observed or used, and demonstrate the process of how you derived the decision from said information and beliefs.
 
         * **Experimental Rules**:
@@ -47,7 +51,7 @@ def gpt_generate(participant_decision):
         * **Response Format**: Please provide the participant's decision and the reasoning (in Traditional Chinese) you have written. Your response must strictly follow this JSON format:
             {{
                 "decision": {participant_decision},
-                "reasoning": "Your 25–45 word reasoning (in Traditional Chinese) explaining the underlying thoughts and the information used for that choice for the provided decision."
+                "reasoning": "Your 25-45 word reasoning (in Traditional Chinese) explaining the underlying thoughts and the information used for that choice for the provided decision."
             }}
     """
     try:
@@ -55,12 +59,12 @@ def gpt_generate(participant_decision):
             model = model_used,
             messages = [
                 {"role": "system", "content": generate_prompt},
-                {"role": "user", "content": f"""Based on that decision: {participant_decision}, write a 25–45 word reasoning (in Traditional Chinese) explaining the underlying thoughts and the information used for that choice. Your response must strictly follow the specified JSON format.
+                {"role": "user", "content": f"""Based on that decision: {participant_decision}, write a 25-45 word reasoning (in Traditional Chinese) explaining the underlying thoughts and the information used for that choice. Your response must strictly follow the specified JSON format.
                 """}
                 ],
             response_format = {"type" : "json_object"},
             temperature = 0.7,   # lower value gives more stable response (0-2)
-            max_tokens = 300  
+            max_completion_tokens = 300  
         )
 
         generate_result = response.choices[0].message.content
@@ -139,7 +143,7 @@ def gpt_judge(reasoning_a, reasoning_b):
             {"role": "user", "content": f"""Please state (in the following specified JSON format) which reasoning more specifically explained the "underlying thoughts" and "information used." (If the two are extremely close, you may declare a tie). Your response must strictly follow the specified JSON format."""}],
         response_format = {"type" : "json_object"},
         temperature = 0,   # test
-        max_tokens = 500
+        max_completion_tokens = 500
     )
 
     judge_result = response.choices[0].message.content
@@ -177,7 +181,9 @@ def set_payoffs(group: Group):
 
 class Player(BasePlayer):
     gpt_reason = models.LongStringField() 
-    winner_type = models.StringField()
+    winner_type = models.StringField(
+        initial = "NaN"
+    )
 
 ########################################################################################################################
 
@@ -201,7 +207,7 @@ class Results(Page):
             extra_data.append({
                 'round': p.round_number,
                 'is_luckywinner': "是" if is_luckywinner else "否",
-                'assessment': "判斷結果：您的理由較好" if p.winner_type == "Human" else "判斷結果：AI生成的理由較好",
+                'assessment': "判定結果：您的理由較好" if p.winner_type == "Human" else "判定結果：AI生成的理由較好",
             })
             
         return {
@@ -209,15 +215,15 @@ class Results(Page):
         }
     
     def after_all_players_arrive(group):
-        for p in group.get.players():
+        for p in group.get_players():
             reason_history = []
             
             for r in C.reasoning_rounds:
                 p_in_r = p.in_round(r)
                 reason_history.append({
-                    "round": r,
+                    "round": int(r),
                     "reason": p_in_r.reason,
-                    "gpt": p_in_r.gpt_reason
+                    "gpt_reason": p_in_r.gpt_reason
                 })
 
             p.participant.vars["reason_history"] = reason_history

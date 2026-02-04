@@ -127,7 +127,7 @@
 - 實驗設計： p=0.7, 目標人數：14 (12-16皆可)
 
 To-Do:
-- after_questionaire設置
+- <del>after_questionaire設置</del>
 - 報酬結算頁面
 - phase_AI:
   - phase_2決策理由放入phase_AI和after_questionaire
@@ -137,3 +137,4 @@ To-Do:
 2/4
 
 - 實驗說明加入理由範例
+- 實驗後問卷抓取理由調整

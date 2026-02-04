@@ -6,7 +6,7 @@ from settings import num_participant
 
 
 class C(BaseConstants):
-    NAME_IN_URL = 'phase1'
+    NAME_IN_URL = 'after_questionaire'
     PLAYERS_PER_GROUP = 4 if debug else num_participant # wait for all 12 participants
     NUM_ROUNDS = 1 if debug else 3
     Correct_Prediction = ["A", "B", "Tie"] # predefined correct predictions (may be randomized)
@@ -46,6 +46,7 @@ class InstructionPage(Page):
     def is_displayed(player):
         return player.round_number == 1
     
+    @staticmethod
     def vars_for_template(player):
         all_players = player.subsession.get_players()
 
@@ -58,7 +59,6 @@ class InstructionPage(Page):
             "reason_history": history
         }
 
-
 class questionaireStartWaitPage(WaitPage):
     title_text = "請等待其他受試者完成準備"
 
@@ -68,9 +68,22 @@ class questionaireStartWaitPage(WaitPage):
     def is_displayed(player):
         return player.round_number == 1
 
-class Prediction(Page):
+class Prediction_2(Page):
     form_model = 'player'
     form_fields = ['prediction']
+
+    @staticmethod
+    def vars_for_template(player):
+        all_players = player.subsession.get_players()
+
+        other_player = random.choice(all_players)   # your own reasoning may be drawn
+
+        history = other_player.participant.vars.get("reason_history",[])
+
+        return {
+            "target_id": other_player.id_in_subsession,
+            "reason_history": history
+        }
 
 class PredictionWaitPage(WaitPage):
     title_text = "請等待其他受試者完成預測"
@@ -84,7 +97,7 @@ class Results(Page):
 page_sequence = [
     InstructionPage,
     questionaireStartWaitPage,
-    Prediction,
+    Prediction_2,
     PredictionWaitPage,
     Results,
 ]

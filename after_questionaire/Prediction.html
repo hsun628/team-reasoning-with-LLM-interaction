@@ -60,26 +60,24 @@
     }
 </style>
 
-<h3 class="mb-4 text-center"><b>第 {{ player.round_number }} 回合</b></h3>
+<h3 class="mb-4 text-center"><b>實驗後問卷第 {{ player.round_number }} 回合</b></h3>
 <p class="text-center lead">請選擇您認為獨立AI判斷較好的決策理由：</p>
 
 <div class="image-display-container">
     {% if reason_history %}
-        {% for item in reason_history %}
             <div class="reason-card">
                 <div class="reason-header">理由 A</div>
                 <div class="reasoning-text">
-                    {{ item.reason }}
+                    {{ reason_a }}
                 </div>
             </div>
 
             <div class="reason-card">
                 <div class="reason-header">理由 B</div>
                 <div class="reasoning-text">
-                    {{ item.gpt_reason }}
+                    {{ reason_b }}
                 </div>
             </div>
-        {% endfor %}
     {% endif %}
 </div>
 

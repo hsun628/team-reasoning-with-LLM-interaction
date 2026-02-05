@@ -1,0 +1,51 @@
+{% extends "global/Page.html" %}
+{% load otree %}
+
+{% block content %}
+    <div class="mb-4 text-center">
+        <h3><b>實驗第二部分已結束</b></h3>
+        <hr>
+        <p class="mb-4 text-center">
+            您的實驗的累積報酬為：<b>{{total_payoff}}</b> 法幣
+        </p>
+        <p class="mb-4 text-center">
+            <b>確認報酬金額後，請點擊下方連結填寫個人資料以發放實驗報酬。</b>
+        </p>
+        
+    </div>
+
+    <div class="d-flex justify-content-center">
+        {% next_button %}
+    </div>
+
+    <script>
+        window.onload = function() {
+            var seconds = 60;
+            var nextButton = document.querySelector('.otree-btn-next');
+            var timerTextSpan = document.getElementById('seconds');
+            var timerContainer = document.getElementById('timer-text');
+            
+
+            if (nextButton) {
+                nextButton.disabled = true;
+            }
+
+            var countdown = setInterval(function() {
+                seconds--;
+                if (timerTextSpan) {
+                    timerTextSpan.innerText = seconds;
+                }
+
+                if (seconds <= 0) {
+                    if (nextButton) {
+                        nextButton.disabled = false;
+                    }
+                    if (timerContainer) {
+                        timerContainer.style.display = 'none'; 
+                    }
+                    clearInterval(countdown);
+                }
+            }, 1000);
+        };
+    </script>
+{% endblock %}

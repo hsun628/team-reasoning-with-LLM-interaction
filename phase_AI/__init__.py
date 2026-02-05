@@ -11,10 +11,10 @@ from settings import debug
 
 load_dotenv()
 
-my_api_key = os.getenv('api_key')
+my_api_key = os.getenv('api_key')   # DO NOT PASTE YOUR API_KEY HERE!
 model_used = "gpt-5.2"
 
-client = OpenAI(api_key = my_api_key)
+client = OpenAI(api_key = my_api_key)  # DO NOT PASTE YOUR API_KEY HERE!
 
 class C(BaseConstants):
     NAME_IN_URL = 'phase_AI'
@@ -27,8 +27,11 @@ class Subsession(BaseSubsession):
     pass
 
 class Group(BaseGroup):
+    pass 
+
+class Player(BasePlayer):
     gpt_reason = models.LongStringField() 
-    winner_type = models.StringField() 
+    winner_type = models.StringField()
 
 ########################################################################################################################
 
@@ -54,27 +57,33 @@ def gpt_generate(participant_decision):
                 "reasoning": "Your 25-45 word reasoning (in Traditional Chinese) explaining the underlying thoughts and the information used for that choice for the provided decision."
             }}
     """
-    try:
-        response = client.chat.completions.create(
-            model = model_used,
-            messages = [
-                {"role": "system", "content": generate_prompt},
-                {"role": "user", "content": f"""Based on that decision: {participant_decision}, write a 25-45 word reasoning (in Traditional Chinese) explaining the underlying thoughts and the information used for that choice. Your response must strictly follow the specified JSON format.
+
+    for attempt in range(3):
+        try:
+            response = client.chat.completions.create(
+                model = model_used,
+                messages = [
+                    {"role": "system", "content": generate_prompt},
+                    {"role": "user", "content": f"""Based on that decision: {participant_decision}, write a 25-45 word reasoning (in Traditional Chinese) explaining the underlying thoughts and the information used for that choice. Your response must strictly follow the specified JSON format.
                 """}
                 ],
-            response_format = {"type" : "json_object"},
-            temperature = 0.7,   # lower value gives more stable response (0-2)
-            max_completion_tokens = 300  
-        )
+                response_format = {"type" : "json_object"},
+                temperature = 0.7,   # lower value gives more stable response (0-2)
+                max_completion_tokens = 300  
+            )
 
-        generate_result = response.choices[0].message.content
-        data_generate = json.loads(generate_result)
+            generate_result = response.choices[0].message.content
+            data_generate = json.loads(generate_result)
 
-        return data_generate.get("reasoning")
+            return data_generate.get("reasoning")
     
-    except Exception as e:
-        print(f"JSON / API error: {e}")
-        return "JSON / API error"
+        except Exception as e:
+            if attempt < 2:
+                time.sleep(2)
+                continue
+
+            print(f"JSON / API error: {e}")
+            return "JSON / API error"
     
 ########################################################################################################################
 
@@ -130,7 +139,7 @@ def gpt_judge(reasoning_a, reasoning_b):
 
         Your response must strictly follow this JSON format:
             {{
-                "winner": "reasoning_1" or "reasoning_2",
+                "winner": "reasoning_1" or "reasoning_2" or "Tie",
                 "analysis": "A brief reason for your judgement of the winner."
             }}
         
@@ -155,44 +164,78 @@ def gpt_judge(reasoning_a, reasoning_b):
         return "Human" if reasons[0][0] == "A" else "AI"
     elif "reasoning_2" in winner:
         return "AI" if reasons[0][0] == "A" else "Human"
+    elif "Tie" in winner:
+        return "Tie"
     else:
         return "Human"   # in case of responses not follwoing instructions
 
 ########################################################################################################################
 
-def set_payoffs(group: Group):
-    if group.round_number in C.reasoning_rounds:
-        for p in group.get_players():
-            human_reason = p.participant.vars.get(f'reason_{p.round_number}')
+import time
+
+def set_payoffs(subsession: Subsession):
+    all_players = subsession.get_players()
+
+    for p in all_players:
+        p.winner_type = "NaN" 
+        p.gpt_reason = "NaN"
+
+        if subsession.round_number in C.reasoning_rounds:
+            raw_reason = p.participant.vars.get(f"reason_{p.round_number}")
+            human_reason = str(raw_reason).strip() if raw_reason else ""
             human_decision = p.participant.vars.get(f'decision_{p.round_number}')
             phase2_payoff = p.participant.vars.get(f'payoff_{p.round_number}', cu(0))
            
             if human_reason and human_decision:
-                p.gpt_reason = gpt_generate(human_decision)
+                generated_reason = gpt_generate(human_decision)
+
+                time.sleep(1)
+                p.gpt_reason = str(generated_reason).strip()
+
+                time.sleep(1)
                 p.winner_type = gpt_judge(human_reason, p.gpt_reason)
 
-            if p.winner_type == "Human":
-                p.payoff = cu(C.Pass_Reward) - phase2_payoff # payoff in oTree is cumulative
+                if p.winner_type == "Human":
+                    p.payoff = cu(C.Pass_Reward) - phase2_payoff # payoff in oTree is cumulative
+                else:
+                    p.payoff = - phase2_payoff
             else:
-                p.payoff = - phase2_payoff
-    else:
-        for p in group.get_players():
+                p.gpt_reason = "NaN"
+                p.winner_type = "NaN"
+                p.payoff = phase2_payoff
+        else:
             p.payoff = cu(0)
 
-class Player(BasePlayer):
-    gpt_reason = models.LongStringField() 
-    winner_type = models.StringField(
-        initial = "NaN"
-    )
+        if p.round_number == 1:
+            p.participant.vars["reason_history"] = []
+
+        if p.round_number in C.reasoning_rounds:
+            current_history = p.participant.vars.get("reason_history", [])
+
+            if not any(d.get("round") == p.round_number for d in current_history):
+                current_history.append({
+                    "round": p.round_number,
+                    "human_reason": p.participant.vars.get(f"reason_{p.round_number}"),
+                    "gpt_reason": p.gpt_reason,
+                    "winner": p.winner_type
+                })
+                p.participant.vars["reason_history"] = current_history
 
 ########################################################################################################################
 
 # pages
 
 class wait_api(WaitPage):
-    title_text = "獨立的ChatGPT將比較您在每個額外說明回合寫下的理由和AI生成的理由"
+    title_text = "獨立的ChatGPT正在比較您寫下的理由和AI生成的理由"
 
-    wait_for_all_groups = True
+    wait_for_all_groups = False
+
+    after_all_players_arrive = 'set_payoffs'
+
+class payoff_WaitPage(WaitPage):
+    title_text = "請等待獨立ChatGPT進行判定"
+
+    wait_for_all_groups = False
 
 class Results(Page):
     @staticmethod
@@ -207,38 +250,35 @@ class Results(Page):
             extra_data.append({
                 'round': p.round_number,
                 'is_luckywinner': "是" if is_luckywinner else "否",
-                'assessment': "判定結果：您的理由較好" if p.winner_type == "Human" else "判定結果：AI生成的理由較好",
+                'assessment': "您的理由較好" if p.winner_type == "Human" else "AI生成的理由較好",
+                "round_payoff": p.payoff 
             })
             
         return {
-            'extra_data': extra_data
+            'extra_data': extra_data,
+            "total_payoff": player.participant.payoff
         }
     
-    def after_all_players_arrive(group):
-        for p in group.get_players():
-            reason_history = []
+#    def after_all_players_arrive(group):
+#        for p in group.get_players():
+#            reason_history = []
             
-            for r in C.reasoning_rounds:
-                p_in_r = p.in_round(r)
-                reason_history.append({
-                    "round": int(r),
-                    "reason": p_in_r.reason,
-                    "gpt_reason": p_in_r.gpt_reason
-                })
+#            for r in C.reasoning_rounds:
+#                p_in_r = p.in_round(r)
+#                reason_history.append({
+#                    "round": int(r),
+#                    "reason": p_in_r.reason,
+#                    "gpt_reason": p_in_r.gpt_reason
+#                })
 
-            p.participant.vars["reason_history"] = reason_history
+#            p.participant.vars["reason_history"] = reason_history
 
-class payoff_WaitPage(WaitPage):
-    title_text = "請等待其他受試者確認此部分實驗報酬"
 
-    wait_for_all_groups = True
-
-    after_all_players_arrive = 'set_payoffs'
 
 page_sequence = [
     wait_api,
-    Results,
-    payoff_WaitPage
+    payoff_WaitPage,
+    Results
     ]
 
  

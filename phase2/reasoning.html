@@ -1,6 +1,34 @@
 {% extends "global/Page.html" %}
 {% load otree %}
 
+{% block styles %}
+<style>
+    /* 強制修改理由輸入框的大小 */
+    textarea {
+        min-height: 200px !important; /* 設定高度為 300 像素 */
+        width: 100% !important;       /* 寬度佔滿 */
+        padding: 15px !important;     /* 內邊距，打字比較舒服 */
+        font-size: 16px !important;   /* 字體放大一點 */
+        border: 2px solid #ced4da !important;
+        border-radius: 8px !important;
+        line-height: 1.6 !important;
+    }
+
+    /* 當輸入框獲得焦點時改變顏色，讓受試者知道正在輸入 */
+    textarea:focus {
+        border-color: #007bff !important;
+        box-shadow: 0 0 8px rgba(0,123,255,0.25) !important;
+        outline: none !important;
+    }
+
+    /* 調整提示框樣式 */
+    #time-warning {
+        background-color: #fff3f3;
+        border-radius: 5px;
+    }
+</style>
+{% endblock %}
+
 {% block content %}
 <h3><b>此回合為額外說明回合</b></h3>
 
@@ -10,7 +38,7 @@
 
     {{ formfields }}
 
-<div class="d-flex justify-content-end mt-4">
+<div class="d-flex justify-content mt-4">
     {% next_button %}
 </div>
 

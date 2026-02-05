@@ -63,10 +63,11 @@ class Player(BasePlayer):
     )
     reason = models.LongStringField(
         label = "請說明您選擇該數字的理由：",
-        initial = "",
-        blank = True,
+        initial = ""
     )
-    is_luckywinner = models.BooleanField()
+    is_luckywinner = models.BooleanField(
+        initial = False
+    )
 
 ##############################################################################
 
@@ -146,6 +147,7 @@ class Results(Page):
                 'decision': f"{player.in_round(g.round_number).decision}",
                 'mean': f"{g.mean_number:.2f}",
                 "target": f"{g.target_number:.2f}",
+                "reason": player.in_round(g.round_number).reason if g.round_number in C.reasoning_rounds else None,
                 'is_current': g.round_number == player.round_number,
                 'is_luckywinner': player.in_round(g.round_number).is_luckywinner
             })

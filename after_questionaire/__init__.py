@@ -8,9 +8,10 @@ from settings import num_participant
 class C(BaseConstants):
     NAME_IN_URL = 'after_questionaire'
     PLAYERS_PER_GROUP = 4 if debug else num_participant # wait for all 12 participants
-    NUM_ROUNDS = 1 if debug else 3
     Prediction_Reward = 50
-    reasoning_rounds = [1, 3, 5] if debug else [1, 5, 10]
+    reasoning_rounds = [1, 3] if debug else [1, 5, 10]
+    NUM_ROUNDS = len(reasoning_rounds)
+    participation_fee = 150
 
 class Subsession(BaseSubsession):
     pass
@@ -64,44 +65,54 @@ class InstructionPage(Page):
     def is_displayed(player):
         return player.round_number == 1
     
-    @staticmethod
-    def vars_for_template(player):
-        all_players = player.subsession.get_players()
+#    @staticmethod
+#    def vars_for_template(player):
+#        all_players = player.subsession.get_players()
 
-        other_player = random.choice(all_players)   # your own reasoning may be drawn
+#        other_player = random.choice(all_players)   # your own reasoning may be drawn
 
-        player.target_participant_id = other_player.id_in_subsession
+#        player.target_participant_id = other_player.id_in_subsession
 
-        history = other_player.participant.vars.get("reason_history",[])
+#        history = other_player.participant.vars.get("reason_history",[])
 
-        return {
-            "target_id": other_player.id_in_subsession,
-            "reason_history": history
-        }
+#        return {
+#            "target_id": other_player.id_in_subsession,
+#            "reason_history": history
+#        }
 
 class questionaireStartWaitPage(WaitPage):
     title_text = "請等待其他受試者完成準備"
 
     wait_for_all_groups = True
 
-    @staticmethod
-    def is_displayed(player):
-        return player.round_number == 1
-
 class Prediction(Page):
     form_model = 'player'
     form_fields = ['prediction']
 
     @staticmethod
-    def vars_for_template(player):
-        target_id = player.target_participant_id
-        all_players = player.subsession.get_players()
+    def is_displayed(player):
+        return player.round_number in C.reasoning_rounds
 
-        target_player = [p for p in all_players if p.id_in_subsession == target_id][0]
+    @staticmethod
+    def vars_for_template(player):
+        all_players = player.subsession.get_players()
+        target_player = random.choice(all_players)   # your own reasoning may be drawn
+
+        player.target_participant_id = target_player.id_in_subsession
 
         history = target_player.participant.vars.get("reason_history",[])
 
-        current_entry = history[player.round_number - 1]
+        current_entry = None
+        for entry in history:
+            if entry.get("round") == player.round_number:
+                current_entry = entry
+                break
+        if not current_entry:
+            current_entry = {
+                "human_reason": "NaN",
+                "gpt_reason": "NaN",
+                "winner": "NaN"
+            }
 
         player.is_flipped = random.choice([True, False])
 
@@ -113,6 +124,7 @@ class Prediction(Page):
             reason_b = current_entry.get("gpt_reason")
 
         return {
+            "target_id": player.target_participant_id,
             "reason_a": reason_a,
             "reason_b": reason_b,
             "round_number": player.round_number,
@@ -122,21 +134,96 @@ class Prediction(Page):
 class PredictionWaitPage(WaitPage):
     title_text = "請等待其他受試者完成預測"
     
+    @staticmethod
+    def is_displayed(player):
+        return player.round_number in C.reasoning_rounds
+
     after_all_players_arrive = 'calculate_results'
 
+
 class Results(Page):
-    pass
+    @staticmethod
+    def is_displayed(player):
+        return player.round_number in C.reasoning_rounds
+    
+    @staticmethod
+    def vars_for_template(player):
+        target_id = player.target_participant_id
+        all_players = player.subsession.get_players()
+
+        target_player = [p for p in all_players if p.id_in_subsession == target_id]
+
+        if target_player:
+            target_player = target_player[0]
+            history = target_player.participant.vars.get("reason_history", [])
+
+            current_entry = None
+            for entry in history:
+                if entry.get("round") == player.round_number:
+                    current_entry = entry
+                    break
+
+            if current_entry:
+                if player.is_flipped:
+                    reason_a = current_entry.get("gpt_reason")
+                    reason_b = current_entry.get("human_reason")
+                else:
+                    reason_a = current_entry.get("human_reason")
+                    reason_b = current_entry.get("gpt_reason")
+
+                reason_a = reason_a.strip()
+                reason_b = reason_b.strip()
+                real_winner = current_entry.get("winner")
+            else:
+                reason_a = "NaN"    
+                reason_b = "NaN"
+                real_winner = "NaN"
+        else:
+            reason_a = "NaN"
+            reason_b = "NaN"
+            real_winner = "NaN"
+
+        is_correct = False
+        if player.prediction == "Tie":
+            is_correct = (real_winner == "Tie")
+        elif player.prediction == "A":
+            if not player.is_flipped:
+                is_correct = (real_winner == "Human")
+            else:
+                is_correct = (real_winner == "AI")
+
+        elif player.prediction == "B":   
+            if not player.is_flipped:
+                is_correct == (real_winner == "AI")
+            else:
+                is_correct == (real_winner == "Human")     
+        
+        return {
+            "reason_a": reason_a,
+            "reason_b": reason_b,
+            "real_winner": real_winner,
+            "is_correct": is_correct
+        }
 
 class Payoff(Page):
     title_text = "感謝您參加本實驗，請確認您的報酬金額。"
 
     @staticmethod
     def vars_for_template(player):
-        player.participant.payoff += cu(150)   # add participation fee
+        if player.round_number == C.NUM_ROUNDS:
+            if not player.participant.vars.get("fee_added"):
+                player.participant.payoff += cu(C.participation_fee)
+                player.participant.vars["fee_added"] = True
+
         return {
             "total_payoff": player.participant.payoff
         }
     
+    def is_displayed(player):
+        return player.round_number == C.NUM_ROUNDS
+    
+class redirect_to_form(Page):
+    @staticmethod
     def is_displayed(player):
         return player.round_number == C.NUM_ROUNDS
 
@@ -147,5 +234,6 @@ page_sequence = [
     Prediction,
     PredictionWaitPage,
     Results,
-    Payoff
+    Payoff,
+    redirect_to_form
 ]

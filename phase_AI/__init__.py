@@ -6,6 +6,7 @@ from dotenv import load_dotenv
 import random
 import json
 import re
+import time
 
 from settings import debug
 
@@ -21,7 +22,7 @@ class C(BaseConstants):
     PLAYERS_PER_GROUP = 2 if debug else 6
     NUM_ROUNDS = 3 if debug else 10
     Pass_Reward = 100 # the payoff for players who pass the reason assessment
-    reasoning_rounds = [1, 3, 5] if debug else [1, 5, 10]
+    reasoning_rounds = [1, 3] if debug else [1, 5, 10]
 
 class Subsession(BaseSubsession):
     pass
@@ -171,39 +172,58 @@ def gpt_judge(reasoning_a, reasoning_b):
 
 ########################################################################################################################
 
-import time
-
 def set_payoffs(subsession: Subsession):
     all_players = subsession.get_players()
 
     for p in all_players:
-        p.winner_type = "NaN" 
-        p.gpt_reason = "NaN"
+        human_reason = ""
+        human_decision = None
+        phase2_payoff = cu(0)
 
         if subsession.round_number in C.reasoning_rounds:
+            p.winner_type = "Processing"
+            p.gpt_reason = "Processing"
+
             raw_reason = p.participant.vars.get(f"reason_{p.round_number}")
             human_reason = str(raw_reason).strip() if raw_reason else ""
             human_decision = p.participant.vars.get(f'decision_{p.round_number}')
             phase2_payoff = p.participant.vars.get(f'payoff_{p.round_number}', cu(0))
+
+            print(f"=====回合 {p.round_number} - 受試者{p.id_in_subsession} =====")
+            print(f"human_reason: '{human_reason}'")
+            print(f"human_decision: {human_decision}")
            
-            if human_reason and human_decision:
-                generated_reason = gpt_generate(human_decision)
+            if human_reason and human_decision is not None:
+                wait_time = (p.id_in_subsession - 1)*0.5
+                time.sleep(wait_time)
+                print(f"受試者{p.id_in_subsession} 正在呼叫API")
 
-                time.sleep(1)
-                p.gpt_reason = str(generated_reason).strip()
+                try:
+                    generated_reason = gpt_generate(human_decision)
+                    p.gpt_reason = str(generated_reason).strip()
 
-                time.sleep(1)
-                p.winner_type = gpt_judge(human_reason, p.gpt_reason)
+                    time.sleep(1)
 
-                if p.winner_type == "Human":
-                    p.payoff = cu(C.Pass_Reward) - phase2_payoff # payoff in oTree is cumulative
-                else:
-                    p.payoff = - phase2_payoff
+                    p.winner_type = gpt_judge(human_reason, p.gpt_reason)
+
+                    if p.winner_type == "Human":
+                        p.payoff = cu(C.Pass_Reward) - phase2_payoff # payoff in oTree is cumulative
+                    else:
+                        p.payoff = - phase2_payoff
+                    print(f"API呼叫完成 - winner: {p.winner_type}")
+                except Exception as e:
+                    print(f"API呼叫失敗: {e}")
+                    p.gpt_reason = "API error"
+                    p.winner_type = "Error"
+                    p.payoff = phase2_payoff
             else:
-                p.gpt_reason = "NaN"
-                p.winner_type = "NaN"
+                p.gpt_reason = "No data"
+                p.winner_type = "No data"
                 p.payoff = phase2_payoff
         else:
+            print(f"-回合{p.round_number} 非額外說明回合")
+            p.winner_type = ""
+            p.gpt_reason = ""
             p.payoff = cu(0)
 
         if p.round_number == 1:
@@ -215,8 +235,8 @@ def set_payoffs(subsession: Subsession):
             if not any(d.get("round") == p.round_number for d in current_history):
                 current_history.append({
                     "round": p.round_number,
-                    "human_reason": p.participant.vars.get(f"reason_{p.round_number}"),
-                    "gpt_reason": p.gpt_reason,
+                    "human_reason": human_reason,
+                    "gpt_reason": p.gpt_reason if p.gpt_reason != "Processing" else "API error",
                     "winner": p.winner_type
                 })
                 p.participant.vars["reason_history"] = current_history
@@ -225,27 +245,34 @@ def set_payoffs(subsession: Subsession):
 
 # pages
 
-class wait_api(WaitPage):
-    title_text = "獨立的ChatGPT正在比較您寫下的理由和AI生成的理由"
+class InstructionPage(Page):
+    def is_displayed(player):
+        return player.round_number == 1 
 
-    wait_for_all_groups = False
+class wait_api(WaitPage):
+    title_text = "請等待獨立的ChatGPT判定理由"
+
+    wait_for_all_groups = True
 
     after_all_players_arrive = 'set_payoffs'
 
-class payoff_WaitPage(WaitPage):
-    title_text = "請等待獨立ChatGPT進行判定"
-
-    wait_for_all_groups = False
+    @staticmethod
+    def is_displayed(player):
+        return player.round_number in C.reasoning_rounds
 
 class Results(Page):
     @staticmethod
+    def is_displayed(player):
+        return player.round_number in C.reasoning_rounds
+
+    @staticmethod
     def vars_for_template(player):
-        player_history = player.in_all_rounds()
+        player_history = [p for p in player.in_all_rounds() if p.round_number in C.reasoning_rounds]
         extra_data = []
 
         for p in player_history:
-            if p.round_number in C.reasoning_rounds:
-                is_luckywinner = p.participant.vars.get(f'is_luckywinner_{p.round_number}', cu(0)) > 0
+            is_luckywinner = "False"
+            is_luckywinner = p.participant.vars.get(f'is_luckywinner_{p.round_number}', cu(0)) > 0
             
             extra_data.append({
                 'round': p.round_number,
@@ -276,8 +303,8 @@ class Results(Page):
 
 
 page_sequence = [
+    InstructionPage,
     wait_api,
-    payoff_WaitPage,
     Results
     ]
 

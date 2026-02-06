@@ -9,7 +9,7 @@ class C(BaseConstants):
     PLAYERS_PER_GROUP = 2 if debug else (0.5*num_participant)
     NUM_ROUNDS = 3 if debug else 10
     Winner_Reward = 100
-    reasoning_rounds = [1, 3, 5] if debug else [1, 5, 10]
+    reasoning_rounds = [1, 3] if debug else [1, 5, 10]
 
 class Subsession(BaseSubsession):
     # matching only in the first round of phase2
@@ -52,7 +52,7 @@ def set_payoffs(subsession: Subsession): # because we use wait_for_all_groups
             p.participant.vars[f'reason_{p.round_number}'] = p.reason if p.round_number in C.reasoning_rounds else None
             p.participant.vars[f'decision_{p.round_number}'] = p.decision
             p.participant.vars[f'payoff_{p.round_number}'] = p.payoff
-            p.participant.vars[f'is_winner_{p.round_number}'] = p.is_luckywinner
+            p.participant.vars[f'is_luckywinner_{p.round_number}'] = p.is_luckywinner
 
 class Player(BasePlayer):
     distance = models.FloatField()

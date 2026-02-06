@@ -129,12 +129,24 @@
 To-Do:
 - <del>after_questionaire設置</del>
 - 報酬結算頁面
-- phase_AI:
-  - phase_2決策理由放入phase_AI和after_questionaire
+- <del>phase_AI:
+  - phase_2決策理由放入phase_AI和after_questionaire</del>
 - qualtrics
 - 實驗sop
 
 2/4
 
 - 實驗說明加入理由範例
-- 實驗後問卷抓取理由調整
+- <del>實驗後問卷抓取理由調整</del>
+
+
+2/5
+
+- <del>gpt_reason生成問題：
+  - 可能的原因：按next button速度過快，導致gpt_reason來不及生成就直接跳進下一回合 </del>
+- 檢查(非debug模式)實驗後問卷的顯示是否正常（是否有每回合依序出現一組理由）
+- 檢查報酬計算是否正確
+
+2/6
+
+- 顯示等價新台幣報酬

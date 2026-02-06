@@ -9,12 +9,12 @@
         {% if player.prediction == 'A' %}
             <p class = "mb-4"><b>理由 A</b></p>
             <div class="result-box">
-                <img src="{{ static 'reason1.PNG' }}" style="width: 300px; border: 3px solid #007bff; border-radius: 10px;">
+                <img src="{{ static 'reason_a.PNG' }}" style="width: 300px; border: 3px solid #007bff; border-radius: 10px;">
             </div>
         {% elif player.prediction == 'B' %}
             <p class = "mb-4"><b>理由 B</b></p>
             <div class="result-box">
-                <img src="{{ static 'reason2.PNG' }}" style="width: 300px; border: 3px solid #007bff; border-radius: 10px;">
+                <img src="{{ static 'reason_b.PNG' }}" style="width: 300px; border: 3px solid #007bff; border-radius: 10px;">
             </div>
         {%elif player.prediction == 'Tie' %}
             <div class="result-box d-flex justify-content-center">

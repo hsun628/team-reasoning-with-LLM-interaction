@@ -1,0 +1,20 @@
+{% extends "global/Page.html" %}
+{% load otree %}
+
+{% block content %}
+    <div class="mb-4 text-center">
+        <h3><b>您已完成實驗第二部分的決策</b></h3>
+        <hr>
+        <p class="mb-4 text-center">
+            <b>請點擊下方按鈕，AI和獨立的ChatGPT將根據實驗說明生成、判定您寫下的理由。</b>
+        </p>
+        <p class="mb-4 text-center">    
+            註：如有短暫卡頓為正常現象，請耐心等候。
+        </p>    
+    </div>
+
+    <div class="d-flex justify-content-center">
+        {% next_button %}
+    </div>
+
+{% endblock %}

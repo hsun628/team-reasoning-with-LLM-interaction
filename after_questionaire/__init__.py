@@ -64,21 +64,6 @@ class InstructionPage(Page):
     @staticmethod
     def is_displayed(player):
         return player.round_number == 1
-    
-#    @staticmethod
-#    def vars_for_template(player):
-#        all_players = player.subsession.get_players()
-
-#        other_player = random.choice(all_players)   # your own reasoning may be drawn
-
-#        player.target_participant_id = other_player.id_in_subsession
-
-#        history = other_player.participant.vars.get("reason_history",[])
-
-#        return {
-#            "target_id": other_player.id_in_subsession,
-#            "reason_history": history
-#        }
 
 class questionaireStartWaitPage(WaitPage):
     title_text = "請等待其他受試者完成準備"
@@ -96,7 +81,8 @@ class Prediction(Page):
     @staticmethod
     def vars_for_template(player):
         all_players = player.subsession.get_players()
-        target_player = random.choice(all_players)   # your own reasoning may be drawn
+        other_players = [p for p in all_players if p.id_in_subsession != player.id_in_subsession]
+        target_player = random.choice(other_players)   # your own reasoning may be drawn
 
         player.target_participant_id = target_player.id_in_subsession
 

@@ -160,7 +160,7 @@ def gpt_judge(reasoning_a, reasoning_b):
     judge_result = response.choices[0].message.content
     data_judge = json.loads(judge_result)
     winner = data_judge.get("winner", "")
-    analysis = data_judge.get("analysis", "")
+    gpt_analysis = data_judge.get("analysis", "")
 
 
     if "reasoning_1" in winner:
@@ -242,7 +242,17 @@ def set_payoffs(subsession: Subsession):
                     "winner": p.winner_type,
                     "gpt_analysis": p.gpt_analysis
                 })
-                p.participant.vars["reason_history"] = current_history
+        else:
+            if not any(d.get("round") == p.round_number for d in current_history):
+                current_history.append({
+                    "round": p.round_number,
+                    "human_reason": "",
+                    "gpt_reason": "",
+                    "winner": None,
+                    "gpt_analysis": ""
+                    })
+
+        p.participant.vars["reason_history"] = current_history
 
 ########################################################################################################################
 

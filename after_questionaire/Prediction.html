@@ -61,7 +61,7 @@
 </style>
 
 <h3 class="mb-4 text-center"><b>實驗後問卷第 {{ player.round_number }} 回合</b></h3>
-<p class="text-center lead">請選擇您認為獨立AI判斷較好的決策理由：</p>
+<p class="mb-4 text-center">請選擇您認為獨立AI判斷較好的決策理由：</p>
 
 <div id="time-warning" style="display: none; color: red; font-weight: bold; margin: 10px 0; border: 1px solid red; padding: 10px;">
     請盡快做出預測！
@@ -71,16 +71,12 @@
     {% if reason_history %}
             <div class="reason-card">
                 <div class="reason-header">理由 A</div>
-                <div class="reasoning-text">
-                    {{ reason_a }}
-                </div>
+                <div class="reasoning-text">{{ reason_a }}</div>
             </div>
 
             <div class="reason-card">
                 <div class="reason-header">理由 B</div>
-                <div class="reasoning-text">
-                    {{ reason_b }}
-                </div>
+                <div class="reasoning-text">{{ reason_b }}</div>
             </div>
     {% endif %}
 </div>

@@ -1,27 +1,43 @@
 {% extends "global/Page.html" %}
 
 {% block content %}
+<style>
+    /* 建立理由顯示框的樣式 */
+    .reason-display-box {
+        border: 3px solid #007bff; /* 與你原本圖片邊框顏色一致的藍色 */
+        border-radius: 10px;
+        padding: 20px;
+        background-color: #ffffff;
+        text-align: left; /* 文字靠左對齊 */
+        max-width: 500px; /* 限制寬度避免跑版 */
+        margin: 0 auto; /* 置中顯示框 */
+        line-height: 1.6;
+        white-space: pre-wrap; /* 保留換行 */
+        word-wrap: break-word;
+    }
+</style>
+
 <h3 class="mb-4"><b>預測結果</b></h3>
 
 <p>您的預測是：</p>
 
     <div style="text-align: center; margin: 20px;">
         {% if player.prediction == 'A' %}
-            <p class = "mb-4"><b>理由 A</b></p>
+            <p class="mb-4"><b>理由 A</b></p>
             <div class="result-box">
-                <img src="{{ static 'reason_a.PNG' }}" style="width: 300px; border: 3px solid #007bff; border-radius: 10px;">
+                <div class="reason-display-box">{{ reason_a }}</div>
             </div>
         {% elif player.prediction == 'B' %}
-            <p class = "mb-4"><b>理由 B</b></p>
+            <p class="mb-4"><b>理由 B</b></p>
             <div class="result-box">
-                <img src="{{ static 'reason_b.PNG' }}" style="width: 300px; border: 3px solid #007bff; border-radius: 10px;">
+                <div class="reason-display-box">{{ reason_b }}</div>
             </div>
-        {%elif player.prediction == 'Tie' %}
+        {% elif player.prediction == 'Tie' %}
             <div class="result-box d-flex justify-content-center">
                 <div class="btn btn-outline-secondary btn-choice" style="cursor: default; opacity: 1; pointer-events: none; min-width: 120px; padding: 12px 20px; font-weight: bold; border-width: 2px;">
-                兩者平手
+                    兩者平手
+                </div>
             </div>
-        </div>
         {% endif %}
     </div>
 

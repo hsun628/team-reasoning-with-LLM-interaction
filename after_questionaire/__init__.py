@@ -8,9 +8,9 @@ from settings import num_participant
 class C(BaseConstants):
     NAME_IN_URL = 'after_questionaire'
     PLAYERS_PER_GROUP = 4 if debug else num_participant # wait for all 12 participants
+    NUM_ROUNDS = 3 if debug else 10
     Prediction_Reward = 50
     reasoning_rounds = [1, 3] if debug else [1, 5, 10]
-    NUM_ROUNDS = len(reasoning_rounds)
     participation_fee = 150
 
 class Subsession(BaseSubsession):
@@ -26,19 +26,26 @@ def calculate_results(group:Group):
 
         history = target_p.participant.vars.get("reason_history", [])
 
-        if history:
-            real_winner_type = history[p.round_number - 1].get("winner")
+        current_entry = None
+        for entry in history:
+            if entry.get("round") == p.round_number:
+                current_entry = entry
+                break
+        
+        if current_entry:
+            real_winner_type = current_entry.get("winner")
             is_correct = False
 
             if p.prediction == "Tie":
-                if real_winner_type == "Tie":
-                    is_correct = True
+                is_correct = (real_winner_type == "Tie")
             else:
                 if not p.is_flipped:
-                    if (p.prediction == "A" and real_winner_type == "Human") or (p.prediction == "B" and real_winner_type == "AI"):
+                    if (p.prediction == "A" and real_winner_type == "Human") or \
+                       (p.prediction == "B" and real_winner_type == "AI"):
                         is_correct = True
                 else:
-                    if (p.prediction == "A" and real_winner_type == "AI") or (p.prediction == "B" and real_winner_type == "Human"):
+                    if (p.prediction == "A" and real_winner_type == "AI") or \
+                       (p.prediction == "B" and real_winner_type == "Human"):
                         is_correct = True
 
             p.payoff = cu(C.Prediction_Reward) if is_correct else cu(0)
@@ -180,9 +187,9 @@ class Results(Page):
 
         elif player.prediction == "B":   
             if not player.is_flipped:
-                is_correct == (real_winner == "AI")
+                is_correct = (real_winner == "AI")
             else:
-                is_correct == (real_winner == "Human")     
+                is_correct = (real_winner == "Human")     
         
         return {
             "reason_a": reason_a,

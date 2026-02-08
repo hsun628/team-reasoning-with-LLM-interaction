@@ -3,7 +3,6 @@
 
 {% block content %}
 <style>
-    /* 圖片並排容器 */
     .image-display-container {
         display: flex;
         justify-content: space-around;
@@ -11,29 +10,39 @@
         margin: 20px 0;
     }
 
-    .img-box {
-        border: 2px solid #dee2e6;
-        border-radius: 10px;
-        padding: 15px;
-        text-align: center;
-        width: 48%; /* 稍微留寬度給間隔 */
+    /* 將原本的 img-box 改良為裝文字的卡片 */
+    .reason-card {
+        border: 1px solid #dee2e6;
+        border-radius: 12px;
+        padding: 25px;
+        text-align: left; /* 文字理由建議靠左對齊，較易閱讀 */
+        width: 48%;
         background-color: #ffffff;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.05); /* 增加輕微陰影 */
+        display: flex;
+        flex-direction: column;
     }
 
-    .img-box img {
-        max-width: 100%;
-        height: auto;
-        border-radius: 5px;
-        margin-bottom: 10px;
-    }
-
-    .img-tag {
+    .reason-header {
         font-weight: bold;
-        font-size: 1.2rem;
-        color: #444;
+        font-size: 1.1rem;
+        color: #555;
+        border-bottom: 2px solid #eee;
+        margin-bottom: 15px;
+        padding-bottom: 5px;
+        text-align: center;
     }
 
-    /* 選項按鈕容器 */
+    /* 處理受試者文字的容器 */
+    .reasoning-text {
+        font-size: 1.05rem;
+        line-height: 1.6;
+        color: #333;
+        min-height: 120px;
+        white-space: pre-wrap; /* 保持受試者原始的換行格式 */
+        word-wrap: break-word;
+    }
+
     .options-container {
         display: flex;
         justify-content: center;
@@ -46,51 +55,35 @@
 
     .btn-choice {
         min-width: 120px;
-        padding: 12px 20px;
+        padding: 12px 25px;
         font-weight: bold;
-        transition: all 0.2s;
-    }
-
-    /* 讓警告框更顯眼一點 */
-    #time-warning {
-        border-radius: 5px;
-        text-align: center;
     }
 </style>
 
-<h3 class="mb-4"><b>第{{ player.round_number }}回合</b></h3>
-<p class="mb-4">請選擇您認為獨立AI判斷較好的決策理由：</p>
+<h3 class="mb-4 text-center"><b>第{{ player.round_number }}回合</b></h3>
+<p class="mb-4 text-center">請選擇您認為獨立AI判斷較好的決策理由：</p>
 
 <div id="time-warning" style="display: none; color: red; font-weight: bold; margin: 10px 0; border: 1px solid red; padding: 10px;">
     請盡快做出預測！
 </div>
 
-{{ formfield_errors 'prediction' }}
-
 <div class="image-display-container">
-    <div class="img-box">
-        <span class="img-tag d-block mb-2">理由 A</span>
-        <img src="{{ static 'reason_a.PNG' }}" alt="理由A">
-    </div>
+            <div class="reason-card">
+                <div class="reason-header">理由 A</div>
+                <div class="reasoning-text">{{ reason_a }}</div>
+            </div>
 
-    <div class="img-box">
-        <span class="img-tag d-block mb-2">理由 B</span>
-        <img src="{{ static 'reason_b.PNG' }}" alt="理由B">
-    </div>
+            <div class="reason-card">
+                <div class="reason-header">理由 B</div>
+                <div class="reasoning-text">{{ reason_b }}</div>
+            </div>
 </div>
 
 <div class="options-container">
-    <button type="submit" name="prediction" value="A" class="btn btn-outline-primary btn-choice">
-        理由 A
-    </button>
-    <button type="submit" name="prediction" value="Tie" class="btn btn-outline-secondary btn-choice">
-        兩者平手
-    </button>
-    <button type="submit" name="prediction" value="B" class="btn btn-outline-primary btn-choice">
-        理由 B
-    </button>
+    <button type="submit" name="prediction" value="A" class="btn btn-outline-primary btn-choice">理由 A</button>
+    <button type="submit" name="prediction" value="Tie" class="btn btn-outline-secondary btn-choice">兩者平手</button>
+    <button type="submit" name="prediction" value="B" class="btn btn-outline-primary btn-choice">理由 B</button>
 </div>
-
 {% endblock %}
 
 {% block scripts %}

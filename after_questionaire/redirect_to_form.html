@@ -5,14 +5,18 @@
     <div class="mb-4 text-center">
         <h3><b>感謝您參加本實驗</b></h3>
         <hr>
+    </div>
+
     <div class="mb-4 text-center">
         <b>請點擊下方連結填寫您的個人資料，實驗人員將盡快發放實驗報酬。</b>   
     </div>
 
     <div class="d-flex justify-content-center">
-        <a href = "https://tassel.syd1.qualtrics.com/jfe/form/SV_9oznKPeTFmp4QGG" target = "blank" class = "btn btn-primary" style="padding: 10px 20px; font-weight: bold;">
-            連結（點我！）
+        <a href="https://tassel.syd1.qualtrics.com/jfe/form/SV_9oznKPeTFmp4QGG?label={{ player.participant.label }}&payoff={{ player.participant.payoff }}" 
+           target="_blank" 
+           class="btn btn-primary" 
+           style="padding: 15px 30px; font-weight: bold; font-size: 1.2rem;">
+            前往填寫頁面（點我！）
         </a>
     </div>
-
 {% endblock %}

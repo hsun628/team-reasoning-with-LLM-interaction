@@ -62,7 +62,7 @@ otree prodserver
    
     (確認出現 `remote: Verifying deploy... done.`)
 
-4. 同步資料庫(修改Constants或欄位時必要) -> 
+4. 同步資料庫(修改Constants或欄位時必要) 注意！ -> 
    
    `heroku run otree resetdb` (**這將刪除heroku上現有所有實驗數據！**)
 

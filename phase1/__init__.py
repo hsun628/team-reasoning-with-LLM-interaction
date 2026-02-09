@@ -1,13 +1,13 @@
 # models
 
 from otree.api import *
-from settings import debug
+from settings import DEBUG
 from settings import num_participant
 
 class C(BaseConstants):
     NAME_IN_URL = 'phase1'
-    PLAYERS_PER_GROUP = 4 if debug else int(num_participant) # wait for all 12 participants
-    NUM_ROUNDS = 1 if debug else 3
+    PLAYERS_PER_GROUP = 4 if DEBUG else int(num_participant) # wait for all 12 participants
+    NUM_ROUNDS = 1 if DEBUG else 3
     Correct_Prediction = ["A", "B", "Tie"] # predefined correct predictions (may be randomized)
     Prediction_Reward = 50
 

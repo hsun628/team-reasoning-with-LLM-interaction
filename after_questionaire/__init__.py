@@ -1,16 +1,16 @@
 # models
 
 from otree.api import *
-from settings import debug
+from settings import DEBUG
 from settings import num_participant
 
 
 class C(BaseConstants):
     NAME_IN_URL = 'after_questionaire'
-    PLAYERS_PER_GROUP = 4 if debug else int(num_participant) # wait for all 12 participants
-    NUM_ROUNDS = 3 if debug else 10
+    PLAYERS_PER_GROUP = 4 if DEBUG else int(num_participant) # wait for all 12 participants
+    NUM_ROUNDS = 3 if DEBUG else 10
     Prediction_Reward = 50
-    reasoning_rounds = [1, 3] if debug else [1, 5, 10]
+    reasoning_rounds = [1, 3] if DEBUG else [1, 5, 10]
     participation_fee = 150
 
 class Subsession(BaseSubsession):

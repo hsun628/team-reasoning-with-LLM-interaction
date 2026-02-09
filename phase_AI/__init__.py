@@ -8,7 +8,7 @@ import json
 import re
 import time
 
-from settings import debug
+from settings import DEBUG
 from settings import num_participant
 
 load_dotenv()
@@ -20,10 +20,10 @@ client = OpenAI(api_key = my_api_key)  # DO NOT PASTE YOUR API_KEY HERE!
 
 class C(BaseConstants):
     NAME_IN_URL = 'phase_AI'
-    PLAYERS_PER_GROUP = 2 if debug else int(0.5*num_participant)
-    NUM_ROUNDS = 3 if debug else 10
+    PLAYERS_PER_GROUP = 2 if DEBUG else int(0.5*num_participant)
+    NUM_ROUNDS = 3 if DEBUG else 10
     Pass_Reward = 100 # the payoff for players who pass the reason assessment
-    reasoning_rounds = [1, 3] if debug else [1, 5, 10]
+    reasoning_rounds = [1, 3] if DEBUG else [1, 5, 10]
 
 class Subsession(BaseSubsession):
     pass

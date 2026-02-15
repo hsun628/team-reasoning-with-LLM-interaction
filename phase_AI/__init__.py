@@ -41,18 +41,15 @@ class Player(BasePlayer):
             self.participant.vars["reason_history"] = []
 
         history = []
-        fixed_payoff_sum = cu(0)
-        reason_payoff_sum = cu(0)
 
-        for r in range(1, C.NUM_ROUNDS + 1):
-            if r not in C.reasoning_rounds:
-                phase2_payoff = self.participant.vars.get(f'payoff_{r}', cu(0))
-                fixed_payoff_sum += phase2_payoff
+        time.sleep((self.id_in_subsession - 1) * 0.5)
 
         for r in C.reasoning_rounds:
             human_reason = self.participant.vars.get(f"reason_{r}", "").strip()
             human_decision = self.participant.vars.get(f'decision_{r}')
             is_luckywinner = self.participant.vars.get(f"is_luckywinner_{r}")
+
+            luckywinner_text = "是" if is_luckywinner else "否"
 
             print(f"=====當前處理回合 {r} - 受試者{self.id_in_subsession} =====")
             print(f"human_decision: {human_decision}")
@@ -61,29 +58,28 @@ class Player(BasePlayer):
             if human_reason and human_decision is not None:
                 try:
                     print(f"受試者{self.id_in_subsession} 正在呼叫API")
-                    time.sleep(0.5)
                     
                     gpt_reason = gpt_generate(human_decision)
                     winner_type, gpt_analysis = gpt_judge(human_reason, gpt_reason)
                     self.winner_type = winner_type
 
+                    target_player_in_round = self.in_round(r)
+
                     if winner_type in ["Human", "Tie"]:
-                        self.payoff = cu(C.Pass_Reward)
+                        target_player_in_round.payoff = cu(C.Pass_Reward)
                         result_text = "您的理由較好"
                     else:
-                        self.payoff = cu(0)
+                        target_player_in_round.payoff = cu(0)
                         result_text = "AI生成的理由較好"
-
-                    reason_payoff_sum += self.payoff
 
                     history.append({
                         "round": r,
                         "human_reason": human_reason,
                         "gpt_reason": gpt_reason,
                         "winner_type": winner_type,
-                        "is_luckywinner": is_luckywinner,
+                        "luckywinner_text": luckywinner_text,
                         "result_text": result_text,
-                        "final_payoff": self.payoff
+                        "final_payoff": target_player_in_round.payoff
                     })
 
                     print(f"API呼叫成功 - winner: {winner_type}")
@@ -91,7 +87,9 @@ class Player(BasePlayer):
                 except Exception as e:
                     print(f"Round_{r} API呼叫失敗: {e}")
 
-        total_phase2_payoff = fixed_payoff_sum + reason_payoff_sum
+        all_rounds = self.in_all_rounds()
+        total_phase2_payoff = sum([p.payoff for p in all_rounds])
+
         self.participant.vars["total_phase2_payoff"] = total_phase2_payoff
         self.participant.vars["reason_history"] = history
 
@@ -102,22 +100,31 @@ def gpt_generate(participant_decision):
 
     generate_prompt = f"""
 
-        * **Role Setting**: You are a college student participating in an economics experiment. Your task is to write a reasoning for a specific decision.
+        ### Role: 
+            You are a college student participating in an economics experiment. Your task is to write a reasoning for a specific decision.
 
-        * **Task**: You will be presented with a participant's decision from the experiment described below. Based on that decision, write a 25-45 word reasoning (in Traditional Chinese) explaining the underlying thoughts and the information used for that choice.
-            * **Requirement**: Your reasoning should include the information and beliefs you observed or used, and demonstrate the process of how you derived the decision from said information and beliefs.
+        ### Task: 
+            You will be presented with a participant's decision from the experiment described below. Based on that decision, write a reasoning (about 30 characters in Traditional Chinese) explaining the underlying thoughts and the information used for that choice. The reasoning should follow the requirements below:
+            * **Requirements**:
+                * Your reasoning should include the information and beliefs you observed or used, and demonstrate the process of how you derived the decision from said information and beliefs.
+                * The reasoning should sound like a real participant, not like a game theory expert.
+                * Do not mention Nash equilibrium, infinite iteration, dominance, or formal strategic terminologies.
+                * You may think strategically, but do not fully formalize or optimize the reasoning.* Use natural, conversational language.
+                * Some uncertainty is allowed (e.g., “I guess”, “maybe”, “probably”).
+                * The reasoning should not look highly sophisticated or mathematically complete.
 
-        * **Experimental Rules**:
+        ### Experimental Rules:
             * Part II consists of 10 rounds. At the beginning, the computer randomly divides all participants into two equal groups.
             * In each round, you must choose an integer between 0 and 100.
             * The average of all numbers chosen by participants in your group is called the "Average Number."
             * The person whose choice is closest to **0.7 times the Average Number** (called the "Target Number") is the winner of the round. In the event of a tie, the computer will randomly select one winner.
             * Before each round begins, the computer will display the past "Average Number" and "Target Number" for your group.
 
-        * **Response Format**: Please provide the participant's decision and the reasoning (in Traditional Chinese) you have written. Your response must strictly follow this JSON format:
+        ### Response Format:
+            Please provide the participant's decision and the reasoning (in Traditional Chinese) you have written. Your response must strictly follow this JSON format:
             {{
                 "decision": {participant_decision},
-                "reasoning": "Your 25-45 word reasoning (in Traditional Chinese) explaining the underlying thoughts and the information used for that choice for the provided decision."
+                "reasoning": "Your reasoning (about 30 characters in Traditional Chinese) explaining the underlying thoughts and the information used for that choice for the provided decision."
             }}
     """
 
@@ -167,7 +174,9 @@ def gpt_judge(reasoning_a, reasoning_b):
     * **Information & Belief:** Does the participant mention specific information they observed? Do they state their inferences or hypotheses about the current situation? Did they elaborate on how they arrive at these inferences and hypotheses?
 
     * **Logic & Strategy:** Does the participant demonstrate the derivation process from the aforementioned information and beliefs to their final decision?
-        * **Is the logic consistent with the experimental rules? (Crucial):** Does the claimed causal relationship in the reasoning align with the experimental rules? If the reasoning fundamentally contradicts the rules or physical facts (e.g., claiming that a certain decision can achieve "Effect A," when the rules make it impossible for that decision to ever produce such an effect), the rationale should be considered a "Logical Break." Such a rationale must receive a lower evaluation than one that is logically self-consistent.
+        * **Is the logic consistent with the experimental rules? (Crucial):** Does the claimed causal relationship in the reasoning align with the experimental rules? If the reasoning fundamentally contradicts the rules or physical facts (e.g., claiming that a certain decision can achieve "Effect A," when the rules make it impossible for that decision to ever produce such an effect), the reasoning should be considered a "Logical Break." Such a reasoning must receive a lower evaluation than one that is logically self-consistent.
+
+        * Does the final decision mentioned or implied in the reasoning match the actual decision one chose? (For example, if one chooses A but the reasoning explains the reason of choosing B, then the reasoning should receive a lower evaluation.)
 
     * **Level of Specificity:** Is the reason specific? (For example: prefer "Because I observed A, I expected B, and therefore adopted strategy C" over "I just picked one" or "I wanted to choose this"). You can further judge based on:
         - Whether the reason contains specific information related to the rules, rather than just a vague description.
@@ -321,21 +330,17 @@ def gpt_judge(reasoning_a, reasoning_b):
 
 class InstructionPage(Page):
     @staticmethod
-    def before_next_page(player, timeout_happened):
-        player.gpt_process()
-
-    @staticmethod
     def is_displayed(player):
-        return player.round_number == 1 
+        return player.round_number == 1
 
-class wait_api(WaitPage):
-    title_text = "請等待AI和獨立的ChatGPT生成、判斷理由"
-
-    wait_for_all_groups = False
-
+class ProcessingPage(Page):
     @staticmethod
     def is_displayed(player):
         return player.round_number == 1
+
+    @staticmethod
+    def before_next_page(player, timeout_happened):
+        player.gpt_process()
 
 class Results(Page):
     @staticmethod
@@ -385,7 +390,7 @@ class Results(Page):
 
 page_sequence = [
     InstructionPage,
-    wait_api,
+    ProcessingPage,
     Results
     ]
 

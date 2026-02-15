@@ -31,9 +31,9 @@
     {% for d in history_data %}
         {% if d.is_current %}
             {% if d.is_luckywinner %}
-                <span>您<b>是</b>此回合<b>決策數字</b>的贏家</span>
+                <span>您<b>是</b>此回合的決策數字贏家</span>
             {% else %}
-                <span>您<b>不是</b>此回合決策數字的贏家</span>
+                <span>您<b>不是</b>此回合的決策數字贏家</span>
             {% endif %}
         {% endif %}
     {% endfor %}

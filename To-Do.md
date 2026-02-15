@@ -128,15 +128,15 @@
 
 To-Do:
 - <del>after_questionaire設置</del>
-- 報酬結算頁面
+- <del>報酬結算頁面</del>
 - <del>phase_AI:
   - phase_2決策理由放入phase_AI和after_questionaire</del>
-- qualtrics
+- <del>qualtrics</del>
 - 實驗sop
 
 2/4
 
-- 實驗說明加入理由範例
+- <del>實驗說明加入理由範例</del>
 - <del>實驗後問卷抓取理由調整</del>
 
 
@@ -144,14 +144,14 @@ To-Do:
 
 - <del>gpt_reason生成問題：
   - 可能的原因：按next button速度過快，導致gpt_reason來不及生成就直接跳進下一回合 </del>
-- 檢查(非debug模式)實驗後問卷的顯示是否正常（是否有每回合依序出現一組理由）
-- 檢查報酬計算是否正確
+- <del>檢查(非debug模式)實驗後問卷的顯示是否正常（是否有每回合依序出現一組理由）</del>
+- <del>檢查報酬計算是否正確</del>
 
 2/6
 
 - 顯示等價新台幣報酬
 - <del>實驗後問卷改成不會抽到自己</del>
-- 第一部分預測改題目
+- <del>第一部分預測改題目</del>
   - <del>生成範例理由</del>
 
 2/8
@@ -185,7 +185,7 @@ To-Do:
   ![alt text](image-3.png)
 
   - gpt太強
-  - 受試者理由的最終決策可能和受試者的決策不一致
+  - <del>受試者理由的最終決策可能和受試者的決策不一致</del>
 
 - after_questionaire
   - results 理由顯示跑掉 (報酬好像也跑掉)
@@ -200,7 +200,7 @@ To-Do:
 
 2/12
 
-- 修改generate prompt
+- <del>修改generate prompt</del>
 - gpt_generate提供回合資訊(本回合為第幾回合、過去回合的平均和目標數字)
 
 2/13
@@ -214,7 +214,12 @@ To-Do:
   - <del>一次看到所有回合判斷結果</del>
   - <del>InstructionPage(Pgae): 受試者個別呼叫api</del>
   - wait_api(WaitPage): 等待api
+    - 待測試
   - <del>Results(Page): 受試者查看判斷結果
     - 新增功能：顯示受試者第二部分的最終報酬</del>
 
 - after_questionaire/__init__.py clean code
+
+2/15
+
+- <del>after_questionaire/prediciton page加入 以下為說明選擇xx的兩個決策理由</del>

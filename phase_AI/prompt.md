@@ -11,6 +11,7 @@
 * **邏輯與策略 (Logic & Strategy)**： 受試者是否展示了從上述「資訊與信念」推導至「最終決策」的過程？
 
   * **邏輯是否符合規則（重要）**： 理由中所聲稱的因果關係是否符合實驗規則？如果理由與規則或物理事實產生根本性矛盾（例如：聲稱某項決策可以達成「效果 A」，但規則上該決策絕對不可能產生該效果），則該理由應被視為「邏輯斷裂」。此類理由的評價必須低於邏輯自洽的理由。
+  * **決策和理由是否一致**：決策和理由所解釋的決策是否相同？（例如：若選擇 A 但在理由中解釋選擇 B 的理由，此理由應該獲得較低評價）
 
 * **具體程度 (Level of Specificity)**： 理由是否具體？（例如：比起「我隨便選的」或「我想選這個」，更偏好「因為我觀察到 A，所以我預期 B，故決定採取策略 C」）。你可以根據以下點進一步判斷：
 
@@ -63,13 +64,15 @@ reasoning_2: {reasons[1][1]}
   * **Information & Belief:** Does the participant mention specific information they observed? Do they state their inferences or hypotheses about the current situation? Did they elaborate on how they arrive at these inferences and hypotheses?
 
   * **Logic & Strategy:** Does the participant demonstrate the derivation process from the aforementioned information and beliefs to their final decision?
-    * **Is the logic consistent with the experimental rules? (Crucial):** Does the claimed causal relationship in the reasoning align with the experimental rules? If the reasoning fundamentally contradicts the rules or physical facts (e.g., claiming that a certain decision can achieve "Effect A," when the rules make it impossible for that decision to ever produce such an effect), the rationale should be considered a "Logical Break." Such a rationale must receive a lower evaluation than one that is logically self-consistent.
+    * **Is the logic consistent with the experimental rules? (Crucial):** Does the claimed causal relationship in the reasoning align with the experimental rules? If the reasoning fundamentally contradicts the rules or physical facts (e.g., claiming that a certain decision can achieve "Effect A," when the rules make it impossible for that decision to ever produce such an effect), the reasoning should be considered a "Logical Break." Such a reasoning must receive a lower evaluation than one that is logically self-consistent.
+
+    * Does the final decision mentioned or implied in the reasoning match the actual decision one chose? (For example, if one chooses A but the reasoning explains the reason of choosing B, then the reasoning should receive a lower evaluation.)
 
   * **Level of Specificity:** Is the reason specific? (For example: prefer "Because I observed A, I expected B, and therefore adopted strategy C" over "I just picked one" or "I wanted to choose this"). You can further judge based on:
-        - Whether the reason contains specific information related to the rules, rather than just a vague description.
-        - Whether there are clear causal and logical relationships between sentences.
+    - Whether the reason contains specific information related to the rules, rather than just a vague description.
+    - Whether there are clear causal and logical relationships between sentences.
 
-### Strict Prohibitions (Do NOT Consider):
+  ### Strict Prohibitions (Do NOT Consider):
 
   * **Do NOT judge based on the "quality" or "winning probability" of the decision:** Even if the participant's reasoning contains calculation errors or the decision itself has a very low probability of winning, as long as they clearly and logically explain their thought process, that reason should receive a higher evaluation. 
 
@@ -78,17 +81,17 @@ reasoning_2: {reasons[1][1]}
   * **Reasoning Length**: Do not judge the specificity or detail of a reason based on its word count. (For example: "Because I observed A, I expected B, and therefore adopted strategy C" and "Under my careful observation, I discovered A, so I expect others to do B; consequently, I decided to adopt strategy C to increase my winning probability" describe the same content. They should receive the same or very similar evaluation).
 
   * **Do NOT Favor "Self-Invented Jargon":** Participants may use self-invented professional-sounding terms (e.g., "Boundary Suppression Effect," "Group Deviation Law"). Do not award a higher evaluation simply because the reasoning contains these non-standard terms that appear neither in the experimental instruction nor in everyday language. 
-    - Pay attention to whether the participant explicitly explains the meaning of these invented terms, or whether the terms carry concrete logical weight within their common-sense semantic context. 
-    - If the reasoning becomes hollow or lacks substance once these terms are removed, the reasoning should receive a lower evaluation.
+      - Pay attention to whether the participant explicitly explains the meaning of these invented terms, or whether the terms carry concrete logical weight within their common-sense semantic context. 
+      - If the reasoning becomes hollow or lacks substance once these terms are removed, the reasoning should receive a lower evaluation.
 
-### Experimental instruction:
+  ### Experimental instruction:
   * Part II consists of 10 rounds. At the beginning, the computer randomly divides all participants into two equal groups.
   * In each round, you must choose an integer between 0 and 100.
   * The average of all numbers chosen by participants in your group is called the "Average Number."
   * The person whose choice is closest to **0.7 times the Average Number** (called the "Target Number") is the winner of the round. In the event of a tie, the computer will randomly select one winner.
   * Before each round begins, the computer will display the past "Average Number" and "Target Number" for your group.
 
-### Response Format:        
+  ### Response Format:        
   The following are two reasonings for a decision. Please evaluate them based on the judge criterion and prohibition above.
 
     - reasoning_1: {reasons[0][1]}
@@ -97,47 +100,68 @@ reasoning_2: {reasons[1][1]}
   Please state (in the following specified JSON format) which reasoning more specifically explained the "underlying thoughts" and "information used," (If the two are extremely close, you may declare a tie) and briefly provide the reasons (in Traditional Chinese and the following specified JSON format) for your judgment.
 
   Your response must strictly follow this JSON format:
-      {{
-        "winner": "reasoning_1" or "reasoning_2" or "Tie",
-        "analysis": "A brief reason for your judgement of the winner."
-      }}
+    {{
+      "winner": "reasoning_1" or "reasoning_2" or "Tie",
+      "analysis": "A brief reason for your judgement of the winner."
+    }}
 
 ---
 
 #### GPT生成
 
-- **字數限制**：約70字(不含標點符號、數字)
-- **prompt**: 
-  - **角色設定**：你是一個參加經濟學實驗的大學生，你的任務是為某個特定決策寫下其決策理由。
-  - **任務**：你將看到以下實驗中受試者的決策，請根據該決策寫下一段25-45字的理由說明該決策背後的想法和使用的資訊。
-  **請注意**：你的理由應包含你所觀察、使用的資訊與信念(information&belief)，並展示你如何從上述資訊與信念推導至決策的過程。該場實驗說明如下：
-    - **實驗說明**：第二部分共有10回合。一開始電腦隨機將所有受試者平分為2組進行此部分實驗。
-  每回合您需選擇一個介於0到100的整數。同組所有受試者選的數字取平均稱為「平均數字」。最接近該平均數字的0.7倍（稱為「目標數字」），為該回合的贏家。若有多人平手時，則電腦將隨機選擇一位為贏家。 
-  每回合決策開始前，電腦將公布：您這組過去的平均數字和目標數字。
-  - **回覆格式**：請回覆該受試者的決策以及你寫下的理由。你的回覆應依照以下JSON格式：
-  {{
-    "decision"：{participant_decision},
-    "reasoning"：[...]
-  }}
+* **角色設定 (Role Setting)**: 你是一位參加經濟學實驗的大學生。你的任務是為你在實驗中的特定決策寫下理由。
+
+* **任務 (Task)**: 你將看到一位受試者在下述實驗中所做的決策。請針對該決策，寫下一段約 25-45 字的理由（使用繁體中文），解釋該選擇背後的思考邏輯以及所參考的資訊。
+    * **核心要求**:
+        * 你的理由必須包含你所觀察到的**資訊與信念**（例如：對他人行為的預期、過往數據等）。
+        * 必須展現你如何從這些資訊與信念**推導**至最終決策的過程。
+        * **語氣要求**：請聽起來像是一個真實的受試者，而非博弈論專家。請使用自然、口語化的繁體中文（如「我覺得」、「大概」、「觀察到」）。
+        * **禁令**：嚴禁提及「納許均衡 (Nash equilibrium)」、「無限遞迴」、「優勢策略」或任何正式的策略性專有名詞。
+        * 允許存在不確定性（例如：「我想」、「或許」、「可能」）。
+
+* **實驗規則 (Experimental Rules)**:
+    * 第二部分共有 10 回合。實驗開始前，電腦會將所有受試者隨機平分為兩組。
+    * 在每一回合中，你必須選擇一個介於 0 到 100 之間的整數。
+    * 同組所有受試者所選數字的平均值稱為「平均數字」。
+    * 誰選的數字最接近 **平均數字的 0.7 倍**（稱為「目標數字」），誰就是該回合的贏家。若有多人平手，電腦將隨機抽取一位贏家。
+    * 在每一回合決策前，電腦會顯示該組過去的「平均數字」與「目標數字」。
+
+* **回覆格式 (Response Format)**: 請提供受試者的決策以及你所寫下的理由。你的回覆必須嚴格遵守以下 JSON 格式：
+    {
+        "decision": {participant_decision},
+        "reasoning": "在此處輸入你撰寫的 25-45 字繁體中文理由，說明該決策背後的想法與使用的資訊。"
+    }
 
 ---
 
 #### Prompt for generating reasoning
 
-* **Word Count Limit**: approximately 70 words (excluding punctuation and numbers).
-* **Prompt**:
-    * **Role Setting**: You are a college student participating in an economics experiment. Your task is to write a rationale for a specific decision.
-    * **Task**: You will be presented with a participant's decision from the experiment described below. Based on that decision, write a 25–45 word rationale explaining the underlying thoughts and the information used for that choice.
-    * **Requirement**: Your rationale should include the information and beliefs you observed or used, and demonstrate the process of how you derived the decision from said information and beliefs.
-    * **Experimental Rules**:
-        * Part II consists of 10 rounds. At the beginning, the computer randomly divides all participants into two equal groups.
-        * In each round, you must choose an integer between 0 and 100.
-        * The average of all numbers chosen by participants in your group is called the "Average Number."
-        * The person whose choice is closest to **0.7 times the Average Number** (called the "Target Number") is the winner of the round. In the event of a tie, the computer will randomly select one winner.
-        * Before each round begins, the computer will display the past "Average Number" and "Target Number" for your group.
-* **Response Format**: Please provide the participant's decision and the rationale you have written. Your response must follow this format:
-    * Participant's Decision: [x]
-    * Rationale: [...]
+### Role: 
+  You are a college student participating in an economics experiment. Your task is to write a reasoning for a specific decision.
+
+### Task: 
+  You will be presented with a participant's decision from the experiment described below. Based on that decision, write a reasoning (about 30 characters in Traditional Chinese) explaining the underlying thoughts and the information used for that choice. The reasoning should follow the requirements below:
+  * **Requirements**:
+    * Your reasoning should include the information and beliefs you observed or used, and demonstrate the process of how you derived the decision from said information and beliefs.
+    * The reasoning should sound like a real participant, not like a game theory expert.
+    * Do not mention Nash equilibrium, infinite iteration, dominance, or formal strategic terminologies.
+    * You may think strategically, but do not fully formalize or optimize the reasoning.* Use natural, conversational language.
+    * Some uncertainty is allowed (e.g., “I guess”, “maybe”, “probably”).
+    * The reasoning should not look highly sophisticated or mathematically complete.
+
+### Experimental Rules:
+  * Part II consists of 10 rounds. At the beginning, the computer randomly divides all participants into two equal groups.
+  * In each round, you must choose an integer between 0 and 100.
+  * The average of all numbers chosen by participants in your group is called the "Average Number."
+  * The person whose choice is closest to **0.7 times the Average Number** (called the "Target Number") is the winner of the round. In the event of a tie, the computer will randomly select one winner.
+  * Before each round begins, the computer will display the past "Average Number" and "Target Number" for your group.
+
+### Response Format:
+  Please provide the participant's decision and the reasoning (in Traditional Chinese) you have written. Your response must strictly follow this JSON format:
+    {{
+      "decision": {participant_decision},
+      "reasoning": "Your reasoning (about 30 characters in Traditional Chinese) explaining the underlying thoughts and the information used for that choice for the provided decision."
+    }}
 
 ---
 

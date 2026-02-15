@@ -10,7 +10,7 @@
     <thead>
         <tr>
             <th>回合</th>
-            <th>您是否為決策數字的贏家</th>
+            <th>您是否為決策數字贏家</th>
             <th>獨立ChatGPT的判定結果</th>
             <th>此回合最終報酬</th>
         </tr>
@@ -19,7 +19,7 @@
         {% for entry in reason_history %}
         <tr>
             <td>{{ entry.round }}</td>
-            <td>{{ entry.is_luckywinner }}</td>
+            <td>{{ entry.luckywinner_text }}</td>
             <td>{{ entry.result_text }}</td>
             <td>{{ entry.final_payoff }}</td>
         </tr>

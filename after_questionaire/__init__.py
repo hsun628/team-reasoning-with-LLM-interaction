@@ -108,8 +108,7 @@ class Prediction(Page):
                 "winner_type": "NaN"
             }
 
-        for r in C.reasoning_rounds:
-            human_decision = player.participant.vars.get(f'decision_{r}')
+        target_decision = target_player.participant.vars.get(f'decision_{player.round_number}')
 
         player.is_flipped = random.choice([True, False])
 
@@ -124,7 +123,7 @@ class Prediction(Page):
 
         return {
             "target_id": player.target_participant_id,
-            "human_decision": human_decision,
+            "target_decision": target_decision,
             "reason_a": reason_a,
             "reason_b": reason_b,
             "round_number": player.round_number,

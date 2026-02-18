@@ -223,3 +223,7 @@ To-Do:
 2/15
 
 - <del>after_questionaire/prediciton page加入 以下為說明選擇xx的兩個決策理由</del>
+
+2/18
+
+- 是否需要處理玩家決策數字和理由說明的數字不一致的問題？（目前移除此部分prompt）

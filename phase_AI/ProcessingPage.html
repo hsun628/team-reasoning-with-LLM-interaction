@@ -6,7 +6,7 @@
         <div class="card-body text-center">
             <h4 class="mb-4 text-center"><b>請等待AI和獨立的ChatGPT生成、判斷理由。</b></h4>
             <div class="spinner-border text-primary m-4" style="width: 3rem; height: 3rem;" role="status"></div>
-            <p class="mb-4 text-center">此過程大約需要30-60秒，請勿重新整理或關閉視窗。</p>
+            <p class="mb-4 text-center">此過程大約需要1-3分鐘，請勿重新整理或關閉視窗。</p>
         </div>
     </div>
 
@@ -15,10 +15,22 @@
 
     <script>
         window.onload = function() {
-            // 頁面一顯示，立即點擊 Next 按鈕觸發 before_next_page 裡的 gpt_process
-            setTimeout(function(){
-                document.getElementById('auto_next').click();
-            }, 500); // 延遲 0.5 秒確保頁面渲染完成
+            console.log("頁面載入完成，等待通道開啟...");
+            // 延遲 500ms 確保 WebSocket Handshake 完成
+            setTimeout(function() {
+                liveSend({"type": "start_cpu_task"});
+            }, 500);
         };
+
+        function liveRecv(data) {
+            console.log("收到伺服器訊息:", data);
+            if (data.status === "finished") {
+                const statusBox = document.getElementById("status-message");
+                if (statusBox) {
+                    statusBox.innerHTML = "<p class='text-success'><b>處理完成，正在跳轉...</b></p>";
+                }
+                document.getElementById("auto_next").click();
+            }
+        }
     </script>
 {% endblock %}

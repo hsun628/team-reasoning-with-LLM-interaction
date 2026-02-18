@@ -11,7 +11,7 @@
         <tr>
             <th>回合</th>
             <th>您是否為決策數字贏家</th>
-            <th>獨立ChatGPT的判定結果</th>
+            <th>獨立ChatGPT的判斷結果</th>
             <th>此回合最終報酬</th>
         </tr>
     </thead>
@@ -21,13 +21,13 @@
             <td>{{ entry.round }}</td>
             <td>{{ entry.luckywinner_text }}</td>
             <td>{{ entry.result_text }}</td>
-            <td>{{ entry.final_payoff }}</td>
+            <td>{{ entry.final_payoff }} 法幣</td>
         </tr>
         {% endfor %}
     </tbody>
 </table>
 
-<p class="mb-4">您在第二部分的最終報酬為：<b>{{ total_phase2_payoff }}</b></p>
+<p class="mb-4">您在第二部分的最終報酬為：<b>{{ total_phase2_payoff }}</b> 法幣</p>
 
 <div class="d-flex justify-content-center mt-4">
     {% next_button %}

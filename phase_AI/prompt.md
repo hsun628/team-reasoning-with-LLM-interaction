@@ -47,9 +47,9 @@ reasoning_2: {reasons[1][1]}
 你的回覆必須嚴格遵守此 JSON 格式：
 
 {{
-    "winner": "reasoning_1" 或 "reasoning_2" 或 "Tie",
-    "analysis": "判斷贏家的簡要原因說明。"
-}}
+     "winner": "reasoning_1" 或 "reasoning_2" 或 "Tie", 
+     "analysis": "判斷贏家的簡要原因說明。"
+     }}
 
 ---
 

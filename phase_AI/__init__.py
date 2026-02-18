@@ -37,8 +37,8 @@ class Player(BasePlayer):
     winner_type = models.StringField()
 
     def gpt_process(self):
-        if "reason_history" not in self.participant.vars:
-            self.participant.vars["reason_history"] = []
+        if self.participant.vars.get("reason_history"):
+            return
 
         history = []
 
@@ -67,10 +67,10 @@ class Player(BasePlayer):
 
                     if winner_type in ["Human", "Tie"]:
                         target_player_in_round.payoff = cu(C.Pass_Reward)
-                        result_text = "您的理由較好"
+                        result_text = "您的理由較具體"
                     else:
                         target_player_in_round.payoff = cu(0)
-                        result_text = "AI生成的理由較好"
+                        result_text = "AI生成的理由具體"
 
                     history.append({
                         "round": r,
@@ -175,8 +175,6 @@ def gpt_judge(reasoning_a, reasoning_b):
 
     * **Logic & Strategy:** Does the participant demonstrate the derivation process from the aforementioned information and beliefs to their final decision?
         * **Is the logic consistent with the experimental rules? (Crucial):** Does the claimed causal relationship in the reasoning align with the experimental rules? If the reasoning fundamentally contradicts the rules or physical facts (e.g., claiming that a certain decision can achieve "Effect A," when the rules make it impossible for that decision to ever produce such an effect), the reasoning should be considered a "Logical Break." Such a reasoning must receive a lower evaluation than one that is logically self-consistent.
-
-        * Does the final decision mentioned or implied in the reasoning match the actual decision one chose? (For example, if one chooses A but the reasoning explains the reason of choosing B, then the reasoning should receive a lower evaluation.)
 
     * **Level of Specificity:** Is the reason specific? (For example: prefer "Because I observed A, I expected B, and therefore adopted strategy C" over "I just picked one" or "I wanted to choose this"). You can further judge based on:
         - Whether the reason contains specific information related to the rules, rather than just a vague description.
@@ -339,8 +337,14 @@ class ProcessingPage(Page):
         return player.round_number == 1
 
     @staticmethod
-    def before_next_page(player, timeout_happened):
-        player.gpt_process()
+    def vars_for_template(player):
+        return {}
+    
+    @staticmethod
+    def live_method(player, data):
+        if data.get("type") == "start_cpu_task":
+            player.gpt_process()
+            return {player.id_in_group: {"status": "finished"}}
 
 class Results(Page):
     @staticmethod

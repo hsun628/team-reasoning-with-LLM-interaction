@@ -207,6 +207,8 @@ To-Do:
 
 - <del>phase_AI一次看到所有回合判斷結果</del>
 
+![alt text](image-4.png)
+
 
 2/14
 

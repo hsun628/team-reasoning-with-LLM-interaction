@@ -41,6 +41,12 @@ class Player(BasePlayer):
             return
 
         history = []
+        adjust_payoffs = {}
+        final_payoff = {}
+
+        for r in range(1, C.NUM_ROUNDS + 1):
+            adjust_payoffs[r] = cu(0)
+            final_payoff[r] = cu(self.participant.vars.get(f"payoff_{r}") + adjust_payoffs[r])
 
         time.sleep((self.id_in_subsession - 1) * 0.5)
 
@@ -59,18 +65,23 @@ class Player(BasePlayer):
                 try:
                     print(f"受試者{self.id_in_subsession} 正在呼叫API")
                     
+                    target_player = self.in_round(r)
+
                     gpt_reason = gpt_generate(human_decision)
                     winner_type, gpt_analysis = gpt_judge(human_reason, gpt_reason)
-                    self.winner_type = winner_type
 
-                    target_player_in_round = self.in_round(r)
+                    target_player.gpt_reason = gpt_reason
+                    target_player.gpt_analysis = gpt_analysis
+                    target_player.winner_type = winner_type
 
                     if winner_type in ["Human", "Tie"]:
-                        target_player_in_round.payoff = cu(C.Pass_Reward)
+                        adjust_payoffs[r] = cu(C.Pass_Reward) - cu(self.participant.vars.get(f"payoff_{r}"))
                         result_text = "您的理由較具體"
                     else:
-                        target_player_in_round.payoff = cu(0)
-                        result_text = "AI生成的理由具體"
+                        adjust_payoffs[r] = - cu(self.participant.vars.get(f"payoff_{r}"))
+                        result_text = "AI生成的理由較具體"
+
+                    final_payoff[r] = cu(self.participant.vars.get(f"payoff_{r}")) + adjust_payoffs[r]
 
                     history.append({
                         "round": r,
@@ -79,7 +90,7 @@ class Player(BasePlayer):
                         "winner_type": winner_type,
                         "luckywinner_text": luckywinner_text,
                         "result_text": result_text,
-                        "final_payoff": target_player_in_round.payoff
+                        "final_payoff": final_payoff[r] 
                     })
 
                     print(f"API呼叫成功 - winner: {winner_type}")
@@ -87,8 +98,8 @@ class Player(BasePlayer):
                 except Exception as e:
                     print(f"Round_{r} API呼叫失敗: {e}")
 
-        all_rounds = self.in_all_rounds()
-        total_phase2_payoff = sum([p.payoff for p in all_rounds])
+        
+        total_phase2_payoff = sum(final_payoff.values())
 
         self.participant.vars["total_phase2_payoff"] = total_phase2_payoff
         self.participant.vars["reason_history"] = history

@@ -151,10 +151,17 @@ class Results(Page):
                 'is_current': g.round_number == player.round_number,
                 'is_luckywinner': player.in_round(g.round_number).is_luckywinner
             })
+
+        if player.round_number == C.NUM_ROUNDS:
+            round_payoffs = {r: player.in_round(r).payoff for r in range(1, C.NUM_ROUNDS + 1)}
+            sum_payoffs = sum(round_payoffs.values())
+            player.participant.vars["phase2_round_payoffs"] = round_payoffs
+            player.participant.vars["phase2_sum_payoffs"] = sum_payoffs
             
         return {
             'history_data': history_data
         }
+    
 
 class ResultsWaitPage(WaitPage):
     title_text = "請等待所有受試者確認結果"

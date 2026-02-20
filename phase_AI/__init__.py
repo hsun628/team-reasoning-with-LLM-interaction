@@ -51,6 +51,7 @@ class Player(BasePlayer):
         time.sleep((self.id_in_subsession - 1) * 0.5)
 
         for r in C.reasoning_rounds:
+            round_number = r
             human_reason = self.participant.vars.get(f"reason_{r}", "").strip()
             human_decision = self.participant.vars.get(f'decision_{r}')
             is_luckywinner = self.participant.vars.get(f"is_luckywinner_{r}")
@@ -67,7 +68,7 @@ class Player(BasePlayer):
                     
                     target_player = self.in_round(r)
 
-                    gpt_reason = gpt_generate(human_decision)
+                    gpt_reason = gpt_generate(round_number, human_decision)
                     winner_type, gpt_analysis = gpt_judge(human_reason, gpt_reason)
 
                     target_player.gpt_reason = gpt_reason
@@ -107,7 +108,7 @@ class Player(BasePlayer):
 
 ########################################################################################################################
 
-def gpt_generate(participant_decision):
+def gpt_generate(round_number, participant_decision):
 
     generate_prompt = f"""
 
@@ -115,7 +116,7 @@ def gpt_generate(participant_decision):
             You are a college student participating in an economics experiment. Your task is to write a reasoning for a specific decision.
 
         ### Task: 
-            You will be presented with a participant's decision from the experiment described below. Based on that decision, write a reasoning (about 30 characters in Traditional Chinese) explaining the underlying thoughts and the information used for that choice. The reasoning should follow the requirements below:
+            You will be presented with a participant's decision from the experiment described below. Based on that decision, write a reasoning (about 30-40 characters in Traditional Chinese, 50 characters at most) explaining the underlying thoughts and the information used for that decision. The reasoning should follow the requirements below:
             * **Requirements**:
                 * Your reasoning should include the information and beliefs you observed or used, and demonstrate the process of how you derived the decision from said information and beliefs.
                 * The reasoning should sound like a real participant, not like a game theory expert.
@@ -123,6 +124,9 @@ def gpt_generate(participant_decision):
                 * You may think strategically, but do not fully formalize or optimize the reasoning.* Use natural, conversational language.
                 * Some uncertainty is allowed (e.g., “I guess”, “maybe”, “probably”).
                 * The reasoning should not look highly sophisticated or mathematically complete.
+                * The reasoning should be in accordance with the provided round number:
+                    * For round 1, the reasoning should not mention the past round decision history as there is none.
+                    * For later rounds, the reasoning could be backward-looking.
 
         ### Experimental Rules:
             * Part II consists of 10 rounds. At the beginning, the computer randomly divides all participants into two equal groups.
@@ -134,8 +138,9 @@ def gpt_generate(participant_decision):
         ### Response Format:
             Please provide the participant's decision and the reasoning (in Traditional Chinese) you have written. Your response must strictly follow this JSON format:
             {{
+                "round": {round_number},
                 "decision": {participant_decision},
-                "reasoning": "Your reasoning (about 30 characters in Traditional Chinese) explaining the underlying thoughts and the information used for that choice for the provided decision."
+                "reasoning": "Your reasoning (about 30 characters in Traditional Chinese) explaining the underlying thoughts and the information used for the decision."
             }}
     """
 
@@ -145,11 +150,11 @@ def gpt_generate(participant_decision):
                 model = model_used,
                 messages = [
                     {"role": "system", "content": generate_prompt},
-                    {"role": "user", "content": f"""Based on that decision: {participant_decision}, write a 25-45 word reasoning (in Traditional Chinese) explaining the underlying thoughts and the information used for that choice. Your response must strictly follow the specified JSON format.
+                    {"role": "user", "content": f"""Based on the round number: {round_number} and the provided decision: {participant_decision}, write a reasoning (about 30-40 characters in Traditional Chinese, 50 characters at most) explaining the underlying thoughts and the information used for the decision. Your response must strictly follow the specified JSON format.
                 """}
                 ],
                 response_format = {"type" : "json_object"},
-                temperature = 0.7,   # lower value gives more stable response (0-2)
+                temperature = 1,   # lower value gives more stable response (0-2)
                 max_completion_tokens = 300  
             )
 

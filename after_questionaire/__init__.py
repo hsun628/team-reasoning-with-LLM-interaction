@@ -122,6 +122,7 @@ class Prediction(Page):
         reasoning_round_num = C.reasoning_rounds.index(player.round_number) + 1
 
         return {
+            "round_number": player.round_number,
             "target_id": player.target_participant_id,
             "target_decision": target_decision,
             "reason_a": reason_a,

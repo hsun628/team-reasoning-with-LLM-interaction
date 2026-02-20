@@ -124,9 +124,7 @@ def gpt_generate(round_number, participant_decision):
                 * You may think strategically, but do not fully formalize or optimize the reasoning.* Use natural, conversational language.
                 * Some uncertainty is allowed (e.g., “I guess”, “maybe”, “probably”).
                 * The reasoning should not look highly sophisticated or mathematically complete.
-                * The reasoning should be in accordance with the provided round number:
-                    * For round 1, the reasoning should not mention the past round decision history as there is none.
-                    * For later rounds, the reasoning could be backward-looking.
+                * The reasoning should be in accordance with the provided round number.
 
         ### Experimental Rules:
             * Part II consists of 10 rounds. At the beginning, the computer randomly divides all participants into two equal groups.

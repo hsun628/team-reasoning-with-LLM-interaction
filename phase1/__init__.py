@@ -16,7 +16,7 @@ class C(BaseConstants):
             2: "明天有期中考，而我目前還有兩個章節沒讀。雖然熬夜很累，但至少能把重點看完，所以我決定先讀完再睡。",
             3: "明天有期中考，而我目前還有兩個章節沒讀。如果現在睡覺，明天早上很可能來不及複習，所以我決定先讀完再睡。",
             4: "明天有期中考，我覺得現在還需要再準備一下。雖然熬夜很累，但至少能把重點看完，所以我決定先讀完再睡。",
-            5: "明天有期中考，而我目前還有兩個章節還沒讀完，進度其實有點落後。如果現在就直接去睡覺，明天早上能用來複習的時間應該會不夠，很可能來不及把這兩個章節的重點再看過一遍。雖然熬夜讀書一定會讓人覺得很累，精神也可能沒有那麼好，但至少還能把重要的內容先讀完、心裡比較有底。綜合考量時間與準備程度之後，我還是決定先把剩下的部分讀完，再去休息睡覺。",
+            5: "我剛看窗外的天色整片變得很暗，就跟牛排不小心烤太焦的時候差不多黑，而且雲層厚到不行，讓我想到我早上吃的厚切吐司，吃起來非常軟，只可惜這麼厚的雲層不會讓我有想要吃他的慾望。而且我看氣象預報也說今天降雨機率有80%，順帶一提播報的主播長得很好看。我猜等一下出門一定會下大雨，大概是大到外國人來會說raining cats and dogs的程度，怕被淋得濕答答的，可能會變成落湯雞，有狗又有雞只差猴子就能打鬼了。為了避免這種情況，所以決定還是帶一下傘比較保險。",
             6: "我剛看窗外的天色整片變得很暗、雲層厚到不行，而且我看氣象預報也說今天降雨機率有80%。我猜等一下出門一定會下大雨，怕被淋得濕答答的，所以決定還是帶一下傘比較保險。",
             7: "我剛看窗外的天色整片變得很暗、雲層厚到不行。我猜等一下出門一定會下大雨，怕被淋得濕答答的，所以決定還是帶一下傘比較保險。"
         }
@@ -91,10 +91,19 @@ class Results(Page):
         reason_a, reason_b = C.round_reasonings.get(player.round_number)
         result_text = "正確" if player.is_correct else "錯誤"
 
+        correct_answer = C.Correct_Prediction[player.round_number - 1]
+        if correct_answer == "A":
+            answer_text = "理由A"
+        elif correct_answer == "B":
+            answer_text = "理由B"
+        elif correct_answer == "Tie":
+            answer_text = "兩者平手"
+
         return {
             "reason_a": reason_a,
             "reason_b": reason_b,
-            "result_text": result_text
+            "result_text": result_text,
+            "answer_text": answer_text
         }
 
 class ResultsWaitPage(WaitPage):

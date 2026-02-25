@@ -8,7 +8,7 @@ BASE_DIR = Path(__file__).resolve().parent
 PRODUCTION = environ.get('OTREE_PRODUCTION')
 DEBUG = not PRODUCTION
 
-num_participant = 12   # 12 or 14 or 16
+num_participant = int(environ.get("NUM_PARTICIPANT", 14))  # 12 or 14 or 16
 
 # -------------------
 # SESSION CONFIGS

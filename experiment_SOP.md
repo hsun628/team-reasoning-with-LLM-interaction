@@ -36,7 +36,13 @@ D槽 -> 公用檔案 -> 紙本資料 -> 空白受試者收據
 - username = admin
   password = tassel
 
-創建新session (確認該場實驗的受試者人數)
+修改實驗人數並創建新session：
+
+登入heroku -> dashboard -> app(team-reasoning-llm-p-beauty) -> settings -> Reveal Config Vars -> 將`NUM_PARTICIPANT`設定為該場實驗人數 -> save 
+
+-> 進到otree網址 -> Sessions -> Create New Session -> 輸入實驗人數`NUM_PARTICIPANT`(下方應顯示must be a multiple of `NUM_PARTICIPANT`) 
+
+![alt text](image-7.png)
 
 ### step4 開受試者電腦
 

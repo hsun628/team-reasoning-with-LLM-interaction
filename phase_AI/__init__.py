@@ -35,6 +35,7 @@ class Player(BasePlayer):
     gpt_reason = models.LongStringField()
     gpt_analysis = models.LongStringField() 
     winner_type = models.StringField()
+    is_flipped = models.BooleanField()
 
     def gpt_process(self):
         if self.participant.vars.get("reason_history"):
@@ -68,8 +69,10 @@ class Player(BasePlayer):
                     
                     target_player = self.in_round(r)
 
+                    target_player.is_flipped = random.choice([True, False])
+
                     gpt_reason = gpt_generate(round_number, human_decision)
-                    winner_type, gpt_analysis = gpt_judge(human_reason, gpt_reason)
+                    winner_type, gpt_analysis = gpt_judge(human_reason, gpt_reason, target_player.is_flipped)
 
                     target_player.gpt_reason = gpt_reason
                     target_player.gpt_analysis = gpt_analysis
@@ -171,9 +174,11 @@ def gpt_generate(round_number, participant_decision):
     
 ########################################################################################################################
 
-def gpt_judge(reasoning_a, reasoning_b):
-    reasons = [("A", reasoning_a), ("B", reasoning_b)]
-    random.shuffle(reasons)
+def gpt_judge(reasoning_1, reasoning_2, is_flipped_value):  
+    if is_flipped_value:
+        reasons = [reasoning_2, reasoning_1]
+    else:
+        reasons = [reasoning_1, reasoning_2]
     
     judge_prompt = f"""
 
@@ -216,14 +221,14 @@ def gpt_judge(reasoning_a, reasoning_b):
     ### Response Format:        
         The following are two reasonings for a decision. Please evaluate them based on the judge criterion and prohibition above.
 
-            - reasoning_1: {reasons[0][1]}
-            - reasoning_2: {reasons[1][1]}
+            - reasoning_A: {reasons[0]}
+            - reasoning_B: {reasons[1]}
 
         Please state (in the following specified JSON format) which reasoning more specifically explained the "underlying thoughts" and "information used," (If the two are extremely close, you may declare a tie) and briefly provide the reasons (in Traditional Chinese and the following specified JSON format) for your judgment.
 
         Your response must strictly follow this JSON format:
             {{
-                "winner": "reasoning_1" or "reasoning_2" or "Tie",
+                "winner": "reasoning_A" or "reasoning_B" or "Tie",
                 "analysis": "A brief reason for your judgement of the winner."
             }}
         
@@ -245,10 +250,10 @@ def gpt_judge(reasoning_a, reasoning_b):
     gpt_analysis = data_judge.get("analysis", "")
 
 
-    if "reasoning_1" in winner:
-        final_winner = "Human" if reasons[0][0] == "A" else "AI"
-    elif "reasoning_2" in winner:
-        final_winner = "AI" if reasons[0][0] == "A" else "Human"
+    if "reasoning_A" in winner:
+        final_winner = "Human" if not is_flipped_value else "AI"
+    elif "reasoning_B" in winner:
+        final_winner = "AI" if not is_flipped_value else "Human"
     elif "Tie" in winner:
         final_winner = "Tie" 
 
